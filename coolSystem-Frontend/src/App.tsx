@@ -7,18 +7,20 @@ import { ComponentDetailPage } from './pages/ComponentDetailPage';
 const MainLayout = () => (
     <>
         <AppNavbar />
-        <main>
+        <main className="main-content">
             <Outlet />
         </main>
     </>
 );
 
+const appBaseName = import.meta.env.BASE_URL === '/' ? '' : import.meta.env.BASE_URL;
+
 function App() {
     return (
-        <BrowserRouter>
+        <BrowserRouter basename={appBaseName}>
             <Routes>
-                <Route path="/" element={<HomePage />} />
                 <Route element={<MainLayout />}>
+                    <Route path="/" element={<HomePage />} />
                     <Route path="/components" element={<ComponentsListPage />} />
                     <Route path="/components/:id" element={<ComponentDetailPage />} />
                 </Route>
