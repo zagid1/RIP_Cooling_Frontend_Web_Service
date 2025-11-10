@@ -1,0 +1,183 @@
+/* ComponentDetailPage.css */
+/* Основной контейнер страницы */
+.component-detail-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; 
+    padding-top: 40px;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Размытый фон с картинкой фактора */
+.component-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #c1c9d0; 
+    z-index: -1;
+}
+
+/* Основной контейнер контента */
+.component-content-container {
+    background: #2e2b2b;
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); 
+    padding: 2rem 3rem;
+    margin: 20px;
+    animation: slideUp 0.6s ease-out; 
+}
+
+/* Обертка для картинки */
+.component-image-wrapper {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    margin-right: 1rem; /* Уменьшено */
+    max-width: 350px;
+    padding-top: 10px !important; 
+}
+
+.component-image-wrapper:hover {
+    transform: scale(1.02);
+}
+
+.component-main-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    pointer-events: none; 
+    user-select: none;
+    max-height: 400px;
+}
+
+/* Обертка для информации */
+.component-info-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-left: 1rem; /* Уменьшено */
+    height: 100%;
+}
+
+/* Заголовок компонента */
+.component-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 2rem;
+    line-height: 1.2;
+    color: #ffffff;
+}
+
+/* Блок описания */
+.component-description {
+    margin-bottom: 3rem;
+}
+
+.description-text {
+    font-size: 1.3rem;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 400;
+    margin: 0;
+}
+
+/* Блок с кнопками */
+.component-actions {
+    margin-top: auto;
+    padding-top: 2rem;
+}
+
+.add-to-calc-btn {
+    background: #ffffff !important;
+    color: #2e2b2b !important;
+    border: none !important;
+    font-size: 1.1rem !important;
+    transition: all 0.3s ease !important;
+}
+
+.add-to-calc-btn:hover {
+    background: #f8f9fa !important;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2) !important;
+    color: #2e2b2b !important;
+}
+
+/* Анимация появления карточки снизу вверх */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+    .component-image-wrapper {
+        max-width: 400px;
+    }
+    
+    .component-main-image {
+        max-height: 350px;
+    }
+}
+
+@media (max-width: 992px) {
+    .component-content-container {
+        padding: 1.5rem;
+        margin: 15px;
+    }
+    
+    .component-title {
+        font-size: 2rem;
+    }
+    
+    .description-text {
+        font-size: 1.1rem;
+    }
+    
+    .component-image-wrapper {
+        margin-right: 0;
+        margin-bottom: 1rem; /* Уменьшено */
+        max-width: 100%;
+    }
+    
+    .component-info-wrapper {
+        padding-left: 0;
+    }
+    
+    .component-main-image {
+        max-height: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    .component-detail-page {
+        padding-top: 70px;
+    }
+    
+    .component-content-container {
+        padding: 1rem;
+        margin: 10px;
+    }
+    
+    .component-title {
+        font-size: 1.8rem;
+    }
+    
+    .description-text {
+        font-size: 1rem;
+    }
+    
+    .component-main-image {
+        max-height: 250px;
+    }
+}

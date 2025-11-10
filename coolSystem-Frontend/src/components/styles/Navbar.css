@@ -1,0 +1,31 @@
+/* Navbar.css */
+.custom-navbar {
+    background: rgba(0,0,0,1) !important;
+    border-bottom: 1px solid #333 !important;
+    padding: 0 !important;
+}
+
+.nav-brand {
+    font-size: 28px !important;
+    font-weight: 700 !important;
+    color: rgba(255,255,255,1) !important;
+    text-decoration: none !important;
+}
+
+.nav-link {
+    color: rgba(255,255,255,1) !important;
+    font-size: 24px !important; /* Увеличил с 16px до 20px */
+    font-weight: 600 !important; /* Сделал жирнее */
+    text-decoration: none !important;
+    padding: 0 25px !important; /* Увеличил отступы */
+}
+
+.nav-link:hover {
+    color: rgba(255,255,255,0.8) !important;
+    background: rgba(255,255,255,0.1) !important; /* Добавил фон при наведении */
+    border-radius: 6px !important;
+}
+.container, .container-fluid {
+    background-color: #000000
+     !important;
+}
