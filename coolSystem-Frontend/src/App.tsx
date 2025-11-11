@@ -19,8 +19,8 @@ function App() {
     return (
         <BrowserRouter basename={appBaseName}>
             <Routes>
+                <Route path="/" element={<HomePage />} />
                 <Route element={<MainLayout />}>
-                    <Route path="/" element={<HomePage />} />
                     <Route path="/components" element={<ComponentsListPage />} />
                     <Route path="/components/:id" element={<ComponentDetailPage />} />
                 </Route>

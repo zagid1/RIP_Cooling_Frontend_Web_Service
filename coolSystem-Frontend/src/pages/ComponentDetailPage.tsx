@@ -23,7 +23,9 @@ export const ComponentDetailPage = () => {
         }
     }, [id]);
 
-    const displayImage = component?.image_url || DefaultImage;
+    const displayImage = component?.image_url  
+    ? `${import.meta.env.BASE_URL}${component.image_url}` // Добавляем префикс к картинке из component
+    : DefaultImage;
 
     if (loading) {
         return (

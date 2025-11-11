@@ -1,15 +1,21 @@
 import { useState, useEffect } from 'react';
 import { Container, Row, Col, Spinner, Form, Badge, Image, Button } from 'react-bootstrap';
 import { ComponentCard } from '../components/ComponentCard';
-import { getComponents } from '../api/componentsApi';
-import type { IComponent } from '../types';
+import { getCartBadge, getComponents } from '../api/componentsApi';
+import type { ICartBadge, IComponent } from '../types';
+import { useSelector, useDispatch } from 'react-redux';
+import { setSearchTerm, selectSearchTerm } from '../store/slices/filterSlice';
+import type { AppDispatch } from '../store';
 import './styles/ComponentsListPage.css';
+
+const cartImage = `mock_images/cart.png`;
 
 export const ComponentsListPage = () => {
     const [components, setComponents] = useState<IComponent[]>([]);
     const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [cartCount] = useState(1);
+    const [cartBadge, setCartBadge] = useState<ICartBadge>({ cooling_id: null, count: 0 });
+    const dispatch = useDispatch<AppDispatch>();
+    const searchTerm = useSelector(selectSearchTerm);
 
     const fetchComponents = (filterTitle: string) => {
         setLoading(true);
@@ -26,13 +32,18 @@ export const ComponentsListPage = () => {
     };
 
     useEffect(() => {
-        fetchComponents('');
+        fetchComponents(searchTerm);
+
+        getCartBadge().then(cartData => {
+            setCartBadge(cartData);
+        });
     }, []);
 
     const handleSearchSubmit = (event: React.FormEvent) => {
         event.preventDefault();
         fetchComponents(searchTerm);
     };
+    const isCartActive = cartBadge.count > 0 && cartBadge.cooling_id !== null;
 
     return (
         <Container fluid className="components-container pt-5 pb-4 min-vh-100">
@@ -47,7 +58,7 @@ export const ComponentsListPage = () => {
                                 type="search"
                                 placeholder="Введите название компонента для поиска..."
                                 value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
+                                onChange={(e) => dispatch(setSearchTerm(e.target.value))}
                                 className="search-input"
                             />
                             <Button 
@@ -58,19 +69,30 @@ export const ComponentsListPage = () => {
                             >
                                 {loading ? 'Поиск...' : 'Искать'}
                             </Button>
+
                             <div className="cart-wrapper">
-                                <Image 
-                                    src="https://cdn-icons-png.flaticon.com/512/2972/2972233.png" 
-                                    alt="Корзина" 
-                                    width={32}
-                                    height={32}
-                                />
-                                {cartCount > 0 && (
+                                {isCartActive ? (                               
+                                    <a 
+                                        href="#" 
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            alert(`Переход на страницу заявки (ID: ${cartBadge.cooling_id}) будет реализован.`);
+                                        }}
+                                        title="Перейти к заявке"
+                                    >
+                                        <Image src={cartImage} alt="Корзина" width={32} />
+                                    </a>
+                                ) : (                                  
+                                    <div style={{ cursor: 'not-allowed' }}>
+                                        <Image src={cartImage} alt="Корзина" width={32} style={{ opacity: 0.5 }} />
+                                    </div>
+                                )}                               
+                                {isCartActive && (
                                     <Badge pill bg="danger" className="cart-indicator">
-                                        {cartCount}
+                                        {cartBadge.count}
                                     </Badge>
                                 )}
-                            </div>
+                            </div> 
                         </div>
                     </Col>
                 </Row>

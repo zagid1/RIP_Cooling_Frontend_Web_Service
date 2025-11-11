@@ -11,7 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
-
+/RIP_Frontend_Web_Service-Adaptability-and-deployment
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

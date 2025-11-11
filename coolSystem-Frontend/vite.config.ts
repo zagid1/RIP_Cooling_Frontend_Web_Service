@@ -1,18 +1,48 @@
+// vite.config.ts
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { VitePWA } from 'vite-plugin-pwa'
+import mkcert from 'vite-plugin-mkcert'
+ 
 
-// https://vite.dev/config/
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    port: 3000, // Указываем порт для фронтенда
-    proxy: {
-      // Проксируем запросы /api на ваш бэкенд
-      '/api': {
-        target: 'http://localhost:8080', // Адрес вашего Go-сервиса
-        changeOrigin: true, // Необходимо для виртуальных хостов
-        // rewrite: (path) => path.replace(/^\/api/, '') // В вашем случае это не нужно, т.к. бэкенд ожидает /api
+export default defineConfig(({ command }) => {
+    const base = command === 'build'
+      ? '/RIP_Frontend_Web_Service/' 
+      : '/'; 
+    return {
+      base: base, 
+      plugins: [
+        react(),
+        mkcert(),
+        VitePWA({
+          registerType: 'autoUpdate',
+          devOptions: { enabled: true },
+          manifest: {
+            name: "CoolSystems",
+            short_name: "CoolSystems",
+            description: "Сервис для определения необходимой системы охлаждения.",
+            start_url: ".",
+            display: "standalone",
+            background_color: "#ffffff",
+            theme_color: "#E60023",
+            icons: [
+              { src: 'logo/logo32.png', type: 'image/png', sizes: '32x32' },
+              { src: 'logo/logo192.png', type: 'image/png', sizes: '192x192', purpose: 'any maskable'  },
+              { src: 'logo/logo512.png', type: 'image/png', sizes: '512x512', purpose: 'any maskable'  }
+            ]
+          }
+        })
+      ],
+      server: {
+        port: 3000,
+        proxy: {
+          '/api': {
+            target: 'http://localhost:8080', 
+            changeOrigin: true, 
+          },
+        },
       },
-    },
-  },
-})
+    }
+  }
+)
+ 

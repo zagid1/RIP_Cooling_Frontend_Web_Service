@@ -29,6 +29,11 @@ export interface IComponentToRequest {
   component?: IComponent;
 }
 
+export interface ICartBadge {
+    cooling_id: number | null;
+    count: number;
+}
+
 export interface ICrumb {
   label: string;
   path?: string;
