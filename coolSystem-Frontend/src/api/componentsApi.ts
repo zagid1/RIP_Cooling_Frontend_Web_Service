@@ -1,10 +1,11 @@
 import type { IPaginatedComponents, IComponent, ICartBadge } from '../types';
 import { COMPONENTS_MOCK } from './mock';
-import { getApiBase } from '../config';
+//import { getApiBase } from '../config';
 
 //const API_BASE = '/api';
 
-const API_BASE = getApiBase();
+//const API_BASE = getApiBase();
+const API_BASE = '/api';
 
 // Получение списка факторов с фильтраией по названию
 export const getComponents = async (title: string): Promise<IPaginatedComponents> => {
