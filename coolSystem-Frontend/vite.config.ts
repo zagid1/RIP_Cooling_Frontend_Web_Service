@@ -24,7 +24,7 @@ export default defineConfig(({ command }) => {
             start_url: ".",
             display: "standalone",
             background_color: "#ffffff",
-            theme_color: "#E60023",
+            theme_color: "#06388dff",
             icons: [
               { src: 'logo/logo32.png', type: 'image/png', sizes: '32x32' },
               { src: 'logo/logo192.png', type: 'image/png', sizes: '192x192', purpose: 'any maskable'  },

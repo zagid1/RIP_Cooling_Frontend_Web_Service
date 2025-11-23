@@ -5,6 +5,7 @@ import { getCartBadge, getComponents } from '../api/componentsApi';
 import type { ICartBadge, IComponent } from '../types';
 import { useSelector, useDispatch } from 'react-redux';
 import { setSearchTerm, selectSearchTerm } from '../store/slices/filterSlice';
+import type { RootState } from '../store'; 
 import type { AppDispatch } from '../store';
 import './styles/ComponentsListPage.css';
 
@@ -15,8 +16,9 @@ export const ComponentsListPage = () => {
     const [loading, setLoading] = useState(true);
     const [cartBadge, setCartBadge] = useState<ICartBadge>({ cooling_id: null, count: 0 });
     const dispatch = useDispatch<AppDispatch>();
-    const searchTerm = useSelector(selectSearchTerm);
-
+    const searchTerm = useSelector((state: RootState) => state.filter.searchTerm);
+    const isCartActive = cartBadge.count > 0 && cartBadge.cooling_id !== null;
+    
     const fetchComponents = (filterTitle: string) => {
         setLoading(true);
         getComponents(filterTitle)
@@ -43,7 +45,6 @@ export const ComponentsListPage = () => {
         event.preventDefault();
         fetchComponents(searchTerm);
     };
-    const isCartActive = cartBadge.count > 0 && cartBadge.cooling_id !== null;
 
     return (
         <Container fluid className="components-container pt-5 pb-4 min-vh-100">

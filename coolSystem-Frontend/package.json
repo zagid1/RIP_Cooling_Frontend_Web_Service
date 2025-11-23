@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "tauri": "tauri",
-    "build:tauri": "vite build --mode tauri",
+    "build:tauri": "cross-env VITE_TARGET=tauri vite build",
+    "tauri:dev": "tauri dev",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "deploy": "gh-pages -d dist",
