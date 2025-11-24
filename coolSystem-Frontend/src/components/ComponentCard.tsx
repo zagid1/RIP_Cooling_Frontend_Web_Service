@@ -30,7 +30,7 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({ component }) => {
                 <p className="tdp">TDP: {component.tdp || 'N/A'} Вт</p>
                 <div className="buttons-container">
                     {/* <form action={`/cooling/draft/components/${component.id}`} method="POST" className="button-form"> */}
-                        <button className="apply-btn" type="submit">добавить</button>
+                        {/* <button className="apply-btn" type="submit">добавить</button> */}
                     {/* </form> */}
                     <Link to={`/components/${component.id}`} className="apply-btn">подробнее</Link>
                 </div>
