@@ -2,12 +2,9 @@ import type { IPaginatedComponents, IComponent, ICartBadge } from '../types';
 import { COMPONENTS_MOCK } from './mock';
 //import { getApiBase } from '../config';
 
-//const API_BASE = '/api';
+const API_BASE = '/api';
 
 //const API_BASE = getApiBase();
-const isTauri = import.meta.env.VITE_TARGET === 'tauri';
-const BACKEND_IP = 'http://172.20.10.5:8080'; 
-const API_BASE = isTauri ? `${BACKEND_IP}/api` : '/api';
 
 // Получение списка факторов с фильтраией по названию
 export const getComponents = async (title: string): Promise<IPaginatedComponents> => {
