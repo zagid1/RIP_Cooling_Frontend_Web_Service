@@ -9,7 +9,7 @@ import path from 'path';
 
 export default defineConfig(({ command }) => {
     const base = command === 'build'
-      ? '/RIP_Frontend_Web_Service/' 
+      ? '/RIP_Frontend_Cooling_Service/' 
       : '/'; 
     return {
       base: base, 

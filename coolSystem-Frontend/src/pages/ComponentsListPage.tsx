@@ -9,7 +9,7 @@ import type { RootState } from '../store';
 import type { AppDispatch } from '../store';
 import './styles/ComponentsListPage.css';
 
-const cartImage = `/mock_images/cart.png`;
+const cartImage = `/RIP_Frontend_Cooling_Service/mock_images/cart.png`;
 
 export const ComponentsListPage = () => {
     const [components, setComponents] = useState<IComponent[]>([]);

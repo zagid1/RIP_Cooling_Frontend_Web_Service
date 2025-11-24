@@ -14,7 +14,7 @@ const MainLayout = () => (
 );
 
 //const appBaseName = import.meta.env.BASE_URL === '/' ? '' : import.meta.env.BASE_URL;
-const appBaseName = '/RIP_Frontend_Web_Service/' ;
+const appBaseName = '/RIP_Frontend_Cooling_Service/' ;
 function App() {
     return (
         <BrowserRouter basename={appBaseName}> 
