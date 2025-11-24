@@ -4,12 +4,12 @@ import { ComponentCard } from '../components/ComponentCard';
 import { getCartBadge, getComponents } from '../api/componentsApi';
 import type { ICartBadge, IComponent } from '../types';
 import { useSelector, useDispatch } from 'react-redux';
-import { setSearchTerm, selectSearchTerm } from '../store/slices/filterSlice';
+import { setSearchTerm} from '../store/slices/filterSlice';
 import type { RootState } from '../store'; 
 import type { AppDispatch } from '../store';
 import './styles/ComponentsListPage.css';
 
-const cartImage = `mock_images/cart.png`;
+const cartImage = `/mock_images/cart.png`;
 
 export const ComponentsListPage = () => {
     const [components, setComponents] = useState<IComponent[]>([]);
