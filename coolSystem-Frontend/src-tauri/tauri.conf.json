@@ -1,27 +1,30 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "identifier": "com.coolsystems.app",
   "productName": "front",
   "version": "0.1.0",
-  "identifier": "com.tauri.dev",
-  "build": {
-    "frontendDist": "../dist",
-    "devUrl": "http://localhost:3000",
-    "beforeDevCommand": "npm run dev",
-     "beforeBuildCommand": "npm run build:tauri"
-  },
   "app": {
+
     "windows": [
       {
         "title": "front",
         "width": 800,
         "height": 600,
         "resizable": true,
-        "fullscreen": false
+        "fullscreen": false,
+        "devtools": true
       }
     ],
     "security": {
       "csp": null
-    }
+    },
+    "withGlobalTauri": true
+  },
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:3000",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build:tauri"
   },
   "bundle": {
     "active": true,
@@ -35,7 +38,11 @@
   },
   "plugins": {
     "http": {
-      "scope": ["http://192.168.1.36:*"],
+      "scope": [
+        "http://localhost:8080/*",
+        "http://localhost:8090/*",
+        "http://10.77.189.51:8080/*"
+      ],
       "dangerousAcceptAnyServerCertificate": true
     }
   }
