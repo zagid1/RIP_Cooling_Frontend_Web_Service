@@ -155,13 +155,13 @@
     }
     
     .component-main-image {
-        max-height: 300px;
+        max-height: 350px;
     }
 }
 
 @media (max-width: 768px) {
     .component-detail-page {
-        padding-top: 70px;
+        padding-top: 40px;
     }
     
     .component-content-container {
@@ -178,6 +178,6 @@
     }
     
     .component-main-image {
-        max-height: 250px;
+        max-height: 300px;
     }
 }
