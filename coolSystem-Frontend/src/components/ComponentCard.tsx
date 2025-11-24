@@ -17,9 +17,9 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({ component }) => {
     const imageSrc = component.image_url || DefaultImage;
 
     // Вывод в консоль для проверки
-    console.log('Исходный URL:', component.image_url);
-    console.log('BASE_URL:', import.meta.env.BASE_URL);
-    console.log('Итоговый путь:', imageSrc);
+    // console.log('Исходный URL:', component.image_url);
+    // console.log('BASE_URL:', import.meta.env.BASE_URL);
+    // console.log('Итоговый путь:', imageSrc);
     return (
         <div className="component-card">
             <div className="component-image">

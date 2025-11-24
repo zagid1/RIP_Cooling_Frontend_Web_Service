@@ -1,10 +1,9 @@
 {
-  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "$schema": "https://schema.tauri.app/config/2.0.0", 
   "identifier": "com.coolsystems.app",
   "productName": "front",
   "version": "0.1.0",
   "app": {
-
     "windows": [
       {
         "title": "front",
@@ -35,15 +34,6 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
-  },
-  "plugins": {
-    "http": {
-      "scope": [
-        "http://localhost:8080/*",
-        "http://localhost:8090/*",
-        "http://10.77.189.51:8080/*"
-      ],
-      "dangerousAcceptAnyServerCertificate": true
-    }
   }
 }
+
