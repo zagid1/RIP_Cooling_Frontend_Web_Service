@@ -1,31 +1,94 @@
 /* Navbar.css */
+
+/* Общие стили */
 .custom-navbar {
-    background: rgba(0,0,0,1) !important;
+    height: '40px';
+    background: rgba(0, 0, 0, 1) !important;
     border-bottom: 1px solid #333 !important;
-    padding: 0 !important;
+    padding: 0.5rem 0 !important;
 }
 
 .nav-brand {
-    font-size: 28px !important;
+    font-size: 20px !important;
     font-weight: 700 !important;
-    color: rgba(255,255,255,1) !important;
+    color: rgba(255, 255, 255, 1) !important;
     text-decoration: none !important;
+    white-space: nowrap;
 }
 
 .nav-link {
-    color: rgba(255,255,255,1) !important;
-    font-size: 24px !important; /* Увеличил с 16px до 20px */
-    font-weight: 600 !important; /* Сделал жирнее */
+    color: rgba(255, 255, 255, 1) !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
     text-decoration: none !important;
-    padding: 0 25px !important; /* Увеличил отступы */
+    padding: 0.5rem 25px !important;
+    border-radius: 6px !important;
+    transition: background 0.2s ease, color 0.2s ease;
 }
 
 .nav-link:hover {
-    color: rgba(255,255,255,0.8) !important;
-    background: rgba(255,255,255,0.1) !important; /* Добавил фон при наведении */
-    border-radius: 6px !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
 }
-.container, .container-fluid {
-    background-color: #000000
-     !important;
+
+/* Фон контейнеров (осторожно: глобальное влияние) */
+.container,
+.container-fluid {
+    background-color: #000000 !important;
+}
+
+/* Адаптивность: планшеты и ниже (max-width: 992px) */
+@media (max-width: 992px) {
+    .nav-brand {
+        font-size: 18px !important;
+    }
+
+    .nav-link {
+        font-size: 17px !important;
+        padding: 0.5rem 20px !important;
+    }
+}
+
+/* Адаптивность: мобильные устройства (max-width: 768px) */
+@media (max-width: 768px) {
+    .custom-navbar {
+        padding: 0.75rem 0 !important;
+    }
+
+    .nav-brand {
+        font-size: 18px !important;
+        padding: 0 15px !important;
+    }
+
+    .nav-link {
+        font-size: 16px !important;
+        padding: 0.6rem 15px !important;
+        margin: 0.25rem 0 !important;
+    }
+
+    /* Стили для раскрытого мобильного меню */
+    .navbar-collapse {
+        padding: 0.5rem 0 !important;
+    }
+
+    .navbar-nav {
+        align-items: flex-start !important;
+        padding: 0 15px !important;
+    }
+
+    .nav-link:hover {
+        background: rgba(255, 255, 255, 0.15) !important;
+    }
+}
+
+/* Очень маленькие экраны (max-width: 480px) */
+@media (max-width: 480px) {
+    .nav-brand {
+        font-size: 17px !important;
+    }
+
+    .nav-link {
+        font-size: 12px !important;
+        padding: 0.6rem 12px !important;
+    }
 }

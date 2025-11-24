@@ -37,3 +37,59 @@
     margin: 0 0.75rem;
     color: #adb5bd;
 }
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 480px) {
+    .modern-breadcrumbs {
+        padding: 0.45rem 0.85rem;
+        border-radius: 8px;
+    }
+    
+    .breadcrumb-link {
+        font-size: 0.85rem;
+    }
+    
+    .breadcrumb-separator {
+        margin: 0 0.45rem;
+        font-size: 0.8rem;
+    }
+    
+    /* Сокращаем текст сильнее на мобильных */
+    .breadcrumb-item:not(:last-child) .breadcrumb-link {
+        max-width: 90px;
+        font-size: 0.82rem;
+    }
+    
+    /* Скрываем текст в первом элементе кроме иконки (если есть) */
+    .breadcrumb-item:first-child .breadcrumb-link:not(:only-child) {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 60px;
+    }
+    
+    /* Делаем активный элемент более контрастным */
+    .breadcrumb-active {
+        font-size: 0.87rem;
+        color: #1a1a3a;
+    }
+}
+
+/* Очень маленькие экраны (320px) */
+@media (max-width: 360px) {
+    .modern-breadcrumbs {
+        padding: 0.4rem 0.75rem;
+    }
+    
+    .breadcrumb-link {
+        font-size: 0.8rem;
+    }
+    
+    .breadcrumb-separator {
+        margin: 0 0.4rem;
+    }
+    
+    /* Максимальное сокращение текста */
+    .breadcrumb-item:not(:last-child) .breadcrumb-link {
+        max-width: 70px;
+    }
+}

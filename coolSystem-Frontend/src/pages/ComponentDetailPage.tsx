@@ -55,7 +55,6 @@ export const ComponentDetailPage = () => {
     return (
         <div className="component-detail-page min-vh-100">
             <div className="component-background" />
-            {/* ЗДЕСЬ ИЗМЕНИЛ КЛАСС НА component-detail-container */}
             <Container fluid className="component-detail-container">
                 <div className="mb-4">
                     <CustomBreadcrumbs crumbs={breadcrumbs} />
@@ -73,11 +72,11 @@ export const ComponentDetailPage = () => {
                                 <p className="description-text">{component.description}</p>
                             </div>                
                         </div>
-                        <div className="component-actions">
+                        {/* <div className="component-actions">
                             <Button className='add-to-calc-btn rounded-2 px-4 py-3 fw-semibold'>
                                 Добавить в расчет
                             </Button>
-                        </div>
+                        </div> */}
                     </Col>
                 </Row>
             </Container>

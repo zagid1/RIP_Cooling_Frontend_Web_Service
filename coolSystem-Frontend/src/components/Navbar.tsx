@@ -5,7 +5,7 @@ import './styles/Navbar.css'
 
 export const AppNavbar = () => {
     return (
-        <Navbar className="custom-navbar" sticky="top" style={{ height: '80px' }}>
+        <Navbar className="custom-navbar" sticky="top">
             <Container fluid className='px-7 h-100'>
                 <Navbar.Brand className='nav-brand h-100 d-flex align-items-center' as={Link} to="/">
                     CoolingSystems.org

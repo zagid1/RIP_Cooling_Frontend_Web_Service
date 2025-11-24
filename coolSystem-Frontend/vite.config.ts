@@ -3,7 +3,9 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import mkcert from 'vite-plugin-mkcert'
- 
+import fs from 'fs';
+import path from 'path';
+
 
 export default defineConfig(({ command }) => {
     const base = command === 'build'
@@ -34,6 +36,10 @@ export default defineConfig(({ command }) => {
         })
       ],
       server: {
+        https:{
+        key: fs.readFileSync(path.resolve(__dirname, 'cert.key')),
+        cert: fs.readFileSync(path.resolve(__dirname, 'cert.crt')),
+      },
         host: '0.0.0.0',
         port: 3000,
         proxy: {
