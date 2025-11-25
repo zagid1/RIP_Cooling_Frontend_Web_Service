@@ -1,7 +1,10 @@
 // ComponentCard.tsx
-//import { Button } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import type { IComponent } from '../types';
+import { useSelector, useDispatch } from 'react-redux';
+import { addFactorToDraft } from '../store/slices/cartSlice';
+import type { RootState, AppDispatch } from '../store';
 import './styles/ComponentCard.css'
 
 export const DefaultImage = `/mock_images/default.webp`;
@@ -11,15 +14,17 @@ interface ComponentCardProps {
 }
 
 export const ComponentCard: React.FC<ComponentCardProps> = ({ component }) => {
-    // const imageSrc = component.image_url
-    // ? `${import.meta.env.BASE_URL}${component.image_url}` // Добавляем префикс к картинке из component
-    // : DefaultImage;
+    const dispatch = useDispatch<AppDispatch>();
+    const isAuthenticated = useSelector((state: RootState) => state.user.isAuthenticated);
+
+    const handleAdd = () => {
+        if (component.id) {
+            dispatch(addFactorToDraft(component.id));
+        }
+    };
+
     const imageSrc = component.image_url || DefaultImage;
 
-    // Вывод в консоль для проверки
-    // console.log('Исходный URL:', component.image_url);
-    // console.log('BASE_URL:', import.meta.env.BASE_URL);
-    // console.log('Итоговый путь:', imageSrc);
     return (
         <div className="component-card">
             <div className="component-image">
@@ -29,6 +34,15 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({ component }) => {
                 <h3>{component.title}</h3>
                 <p className="tdp">TDP: {component.tdp || 'N/A'} Вт</p>
                 <div className="buttons-container">
+                    {isAuthenticated && (
+                        <Button 
+                            className='all-btn' 
+                            variant="danger"
+                            onClick={handleAdd}
+                        >
+                            Добавить
+                        </Button>
+                    )}
                     {/* <form action={`/cooling/draft/components/${component.id}`} method="POST" className="button-form"> */}
                         {/* <button className="apply-btn" type="submit">добавить</button> */}
                     {/* </form> */}

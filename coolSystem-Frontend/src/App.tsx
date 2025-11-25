@@ -13,15 +13,20 @@ const MainLayout = () => (
     </>
 );
 
-//const appBaseName = import.meta.env.BASE_URL === '/' ? '' : import.meta.env.BASE_URL;
+
 function App() {
     return (
-        <BrowserRouter > 
+        <BrowserRouter> 
             <Routes>
                 <Route path="/" element={<HomePage />} />
+                <Route path="/login" element={<LoginPage />} />      
+                <Route path="/register" element={<RegisterPage />} />  
                 <Route element={<MainLayout />}>
                     <Route path="/components" element={<ComponentsListPage />} />
                     <Route path="/components/:id" element={<ComponentDetailPage />} />
+                    <Route path="/profile" element={<ProfilePage />} /> 
+                    <Route path="/orders" element={<OrdersListPage />} />
+                    <Route path="/orders/:id" element={<OrderPage />} />
                 </Route>
             </Routes>
         </BrowserRouter>

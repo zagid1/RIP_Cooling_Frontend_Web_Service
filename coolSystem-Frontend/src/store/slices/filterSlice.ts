@@ -1,5 +1,6 @@
 // src/store/slices/filterSlice.ts
 import { createSlice } from '@reduxjs/toolkit';
+import { logoutUser } from './userSlice'; 
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../index';
 
@@ -18,6 +19,11 @@ export const filterSlice = createSlice({
         setSearchTerm: (state, action: PayloadAction<string>) => {
             state.searchTerm = action.payload;
         },
+    },
+    extraReducers: (builder) => {
+        builder.addCase(logoutUser.fulfilled, (state) => {
+            state.searchTerm = '';
+        });
     },
 });
 

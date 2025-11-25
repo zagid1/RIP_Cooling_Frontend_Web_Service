@@ -1,32 +1,31 @@
 // ComponentDetailPage.tsx
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Container, Spinner, Row, Col, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { getComponentById } from '../api/componentsApi';
-import type { IComponent } from '../types';
+import { useSelector, useDispatch } from 'react-redux';
 import { DefaultImage } from '../components/ComponentCard';
 import { CustomBreadcrumbs } from '../components/Breadcrumbs';
+import { fetchFactorById, clearCurrentFactor } from '../store/slices/componentsSlice';
+import type { RootState, AppDispatch } from '../store';
 import './styles/ComponentDetailPage.css';
 
 export const ComponentDetailPage = () => {
     const { id } = useParams<{ id: string }>();
-    const [component, setComponent] = useState<IComponent | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        if (id) {
-            setLoading(true);
-            getComponentById(id)
-                .then(data => setComponent(data))
-                .finally(() => setLoading(false));
-        }
-    }, [id]);
-
-    // const displayImage = component?.image_url  
-    // ? `${import.meta.env.BASE_URL}${component.image_url}` // Добавляем префикс к картинке из component
-    // : DefaultImage;
+    const dispatch = useDispatch<AppDispatch>();
+    const { currentFactor: component, loading } = useSelector((state: RootState) => state.components);
     const displayImage = component?.image_url || DefaultImage;
+
+     useEffect(() => {
+        if (id) {
+            dispatch(fetchFactorById(id));
+        }
+        return () => {
+            dispatch(clearCurrentFactor());
+        };
+    }, [id, dispatch]);
+
+    
 
     if (loading) {
         return (
@@ -72,11 +71,6 @@ export const ComponentDetailPage = () => {
                                 <p className="description-text">{component.description}</p>
                             </div>                
                         </div>
-                        {/* <div className="component-actions">
-                            <Button className='add-to-calc-btn rounded-2 px-4 py-3 fw-semibold'>
-                                Добавить в расчет
-                            </Button>
-                        </div> */}
                     </Col>
                 </Row>
             </Container>

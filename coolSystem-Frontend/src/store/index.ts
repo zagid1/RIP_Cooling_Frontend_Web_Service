@@ -1,13 +1,19 @@
-// src/store/index.ts
 import { configureStore } from '@reduxjs/toolkit';
 import filterReducer from './slices/filterSlice';
+import factorsReducer from './slices/factorsSlice'; 
+import cartReducer from './slices/cartSlice';     
+import userReducer from './slices/userSlice';
+import fraxReducer from './slices/fraxSlice';
 
 export const store = configureStore({
     reducer: {
         filter: filterReducer,
+        components: componentReducer, 
+        cart: cartReducer, 
+        user: userReducer,
+        cooling: coolingReducer,    
     },
 });
 
-// Определяем типы для всего нашего состояния и для диспетчера
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

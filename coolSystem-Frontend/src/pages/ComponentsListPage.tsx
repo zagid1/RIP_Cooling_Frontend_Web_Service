@@ -1,49 +1,40 @@
 import { useState, useEffect } from 'react';
 import { Container, Row, Col, Spinner, Form, Badge, Image, Button } from 'react-bootstrap';
 import { ComponentCard } from '../components/ComponentCard';
-import { getCartBadge, getComponents } from '../api/componentsApi';
-import type { ICartBadge, IComponent } from '../types';
 import { useSelector, useDispatch } from 'react-redux';
-import { setSearchTerm} from '../store/slices/filterSlice';
-import type { RootState } from '../store'; 
-import type { AppDispatch } from '../store';
+import { useNavigate } from 'react-router-dom'; 
+import { fetchFactors } from '../store/slices/factorsSlice';
+import { fetchCartBadge } from '../store/slices/cartSlice';
+import { setSearchTerm } from '../store/slices/filterSlice';
+import type { RootState, AppDispatch } from '../store';
+
 import './styles/ComponentsListPage.css';
 
-const cartImage = `/mock_images/cart.png`;
+const cartImage = `/mock_images/cart.png`;  
 
 export const ComponentsListPage = () => {
-    const [components, setComponents] = useState<IComponent[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [cartBadge, setCartBadge] = useState<ICartBadge>({ cooling_id: null, count: 0 });
     const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
+    const { items: components, loading } = useSelector((state: RootState) => state.components);
     const searchTerm = useSelector((state: RootState) => state.filter.searchTerm);
-    const isCartActive = cartBadge.count > 0 && cartBadge.cooling_id !== null;
+    const cartState = useSelector((state: RootState) => state.cart);
+    const isCartActive = cartState.count > 0 && cartState.component_id !== null;
     
-    const fetchComponents = (filterTitle: string) => {
-        setLoading(true);
-        getComponents(filterTitle)
-            .then(data => {
-                if (Array.isArray(data.items)) {
-                    setComponents(data.items);
-                } else {
-                    console.error("Получены неверные данные:", data);
-                    setComponents([]);
-                }
-            })
-            .finally(() => setLoading(false));
-    };
-
     useEffect(() => {
-        fetchComponents(searchTerm);
-
-        getCartBadge().then(cartData => {
-            setCartBadge(cartData);
-        });
-    }, []);
+        dispatch(fetchFactors(searchTerm));
+        dispatch(fetchCartBadge());
+    }, [dispatch]);
 
     const handleSearchSubmit = (event: React.FormEvent) => {
-        event.preventDefault();
-        fetchComponents(searchTerm);
+        event.preventDefault(); 
+        dispatch(fetchFactors(searchTerm));
+    };
+
+    const handleCartClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (cartState.frax_id) {
+            navigate(`/orders/${cartState.frax_id}`);
+        }
     };
 
     return (
@@ -75,10 +66,7 @@ export const ComponentsListPage = () => {
                                 {isCartActive ? (                               
                                     <a 
                                         href="#" 
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            alert(`Переход на страницу заявки (ID: ${cartBadge.cooling_id}) будет реализован.`);
-                                        }}
+                                        onClick={handleCartClick}
                                         title="Перейти к заявке"
                                     >
                                         <Image src={cartImage} alt="Корзина" width={32} />
@@ -90,7 +78,7 @@ export const ComponentsListPage = () => {
                                 )}                               
                                 {isCartActive && (
                                     <Badge pill bg="danger" className="cart-indicator">
-                                        {cartBadge.count}
+                                        {cartState.count}
                                     </Badge>
                                 )}
                             </div> 
