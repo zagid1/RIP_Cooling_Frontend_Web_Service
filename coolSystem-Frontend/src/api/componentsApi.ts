@@ -6,7 +6,7 @@ import { COMPONENTS_MOCK } from './mock';
 
 //const API_BASE = getApiBase();
 const isTauri = import.meta.env.VITE_TARGET === 'tauri';
-const BACKEND_IP = 'http://10.77.189.51:8080'; // ← ваш IP
+const BACKEND_IP = 'http://10.77.189.51:8080';
 const API_BASE = isTauri ? `${BACKEND_IP}/api` : '/api';
 
 // Получение списка факторов с фильтраией по названию
