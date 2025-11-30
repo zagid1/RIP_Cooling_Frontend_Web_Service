@@ -5,7 +5,7 @@ export const COMPONENTS_MOCK: IPaginatedComponents = {
   total: 9, // обновлено с 3 до 9
   items: [
     {
-      id: 101,
+      id: 1,
       title: "Intel Xeon 8490",
       description: "16-ядерный процессор для серверных систем высшего класса с поддержкой DDR5 памяти",
       image_url: DefaultImage,
@@ -13,7 +13,7 @@ export const COMPONENTS_MOCK: IPaginatedComponents = {
       status: true,
     },
     {
-      id: 102,
+      id: 2,
       title: "AMD EPYC 9654",
       description: "96-ядерный процессор с 192 потоками, частотой до 3.7 GHz для высокопроизводительных серверов",
       image_url: DefaultImage,
@@ -21,7 +21,7 @@ export const COMPONENTS_MOCK: IPaginatedComponents = {
       status: false,
     },
     {
-      id: 103,
+      id: 3,
       title: "Intel Xeon Gold 6418N",
       description: "24-ядерный сбалансированный процессор для enterprise-решений и виртуализации",
       image_url: DefaultImage,
