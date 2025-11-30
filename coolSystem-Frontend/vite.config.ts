@@ -5,12 +5,13 @@ import { VitePWA } from 'vite-plugin-pwa'
 import mkcert from 'vite-plugin-mkcert'
 // mkcert отключён для Tauri
 
-export default defineConfig(({ command, mode }) => {
-  const isTauri = process.env.VITE_TARGET === 'tauri';
+export default defineConfig(() => {
+  //const isTauri = process.env.VITE_TARGET === 'tauri';
   
   return {
     plugins: [
       react(),
+      mkcert(),
       VitePWA({
         registerType: 'autoUpdate',
         devOptions: { enabled: true },

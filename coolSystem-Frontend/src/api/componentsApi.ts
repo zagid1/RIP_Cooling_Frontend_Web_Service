@@ -4,9 +4,13 @@ import { COMPONENTS_MOCK } from './mock';
 
 //const API_BASE = '/api';
 
+// const isTauri = import.meta.env.VITE_TARGET === 'tauri';
+// const BACKEND_IP = 'https://10.241.187.182:8080/'; 
+// const API_BASE_URL = isTauri ? `${BACKEND_IP}/api` : '/api';
+
 //const API_BASE = getApiBase();
 const isTauri = import.meta.env.VITE_TARGET === 'tauri';
-const BACKEND_IP = 'http://10.77.189.51:8080';
+const BACKEND_IP = 'http://10.148.202.51:8080/';
 const API_BASE = isTauri ? `${BACKEND_IP}/api` : '/api';
 
 // Получение списка факторов с фильтраией по названию

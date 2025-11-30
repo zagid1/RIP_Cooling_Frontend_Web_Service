@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.tauri.app/config/2.0.0", 
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "identifier": "com.coolsystems.app",
   "productName": "front",
   "version": "0.1.0",

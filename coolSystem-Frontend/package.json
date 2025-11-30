@@ -4,15 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "tauri": "tauri",
-    "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build",
-   "build:tauri": "vite build",
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "deploy": "gh-pages -d dist",
+    "build:tauri": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "gh-pages -d dist",
+    "tauri": "tauri"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.10.1",
