@@ -13,11 +13,11 @@ const MainLayout = () => (
     </>
 );
 
-const appBaseName = import.meta.env.BASE_URL === '/' ? '' : import.meta.env.BASE_URL;
+//const appBaseName = import.meta.env.BASE_URL === '/' ? '' : import.meta.env.BASE_URL;
 
 function App() {
     return (
-        <BrowserRouter basename={appBaseName}>
+        <BrowserRouter>
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route element={<MainLayout />}>

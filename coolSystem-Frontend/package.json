@@ -13,6 +13,8 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@tauri-apps/api": "^2.9.0",
+    "@tauri-apps/cli": "^2.9.4",
     "@reduxjs/toolkit": "^2.10.1",
     "bootstrap": "^5.3.8",
     "gh-pages": "^6.3.0",
@@ -26,7 +28,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
-    "@tauri-apps/cli": "^2.9.4",
     "@types/node": "^24.6.0",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",

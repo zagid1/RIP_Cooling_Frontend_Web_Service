@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import type { IComponent } from '../types';
 import './styles/ComponentCard.css'
 
-export const DefaultImage = `mock_images/default.webp`;
+export const DefaultImage = `/mock_images/default.webp`;
 
 interface ComponentCardProps {
     component: IComponent;

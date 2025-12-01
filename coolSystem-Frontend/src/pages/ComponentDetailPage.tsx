@@ -73,11 +73,6 @@ export const ComponentDetailPage = () => {
                                 <p className="description-text">{component.description}</p>
                             </div>                
                         </div>
-                        <div className="component-actions">
-                            <Button className='add-to-calc-btn rounded-2 px-4 py-3 fw-semibold'>
-                                Добавить в расчет
-                            </Button>
-                        </div>
                     </Col>
                 </Row>
             </Container>

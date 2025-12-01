@@ -8,7 +8,7 @@ import { setSearchTerm, selectSearchTerm } from '../store/slices/filterSlice';
 import type { AppDispatch } from '../store';
 import './styles/ComponentsListPage.css';
 
-const cartImage = `mock_images/cart.png`;
+const cartImage = `/mock_images/cart.png`;
 
 export const ComponentsListPage = () => {
     const [components, setComponents] = useState<IComponent[]>([]);
