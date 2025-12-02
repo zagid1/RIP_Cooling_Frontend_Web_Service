@@ -23,7 +23,7 @@ export const fetchCartBadge = createAsyncThunk(
     'cart/fetchCartBadge',
     async (_, { rejectWithValue }) => {
         try {
-            const response = await api.frax.factorscartList();
+            const response = await api.cooling.coolcartList();
             return response.data;
         } catch (error) {
             return rejectWithValue('Failed to fetch cart');
@@ -36,7 +36,7 @@ export const addComponentToDraft = createAsyncThunk(
     'cart/addToDraft',
     async (factorId: number, { dispatch, rejectWithValue }) => {
         try {
-            await api.frax.draftFactorsCreate(factorId);
+            await api.cooling.draftComponentsCreate(factorId);
             dispatch(fetchCartBadge());
             return factorId;
         } catch (error: any) {
