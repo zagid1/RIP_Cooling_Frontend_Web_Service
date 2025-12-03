@@ -56,11 +56,11 @@ export const fetchComponentById = createAsyncThunk(
     'factors/fetchComponentById',
     async (id: string, { rejectWithValue }) => {
         try {
-            const factorId = parseInt(id);
-            const response = await api.factors.factorsDetail(factorId);
+            const componentId = parseInt(id);
+            const response = await api.components.componentsDetail(componentId);
             
             const data = response.data;
-            const mappedFactor: IComponent = {
+            const mappedComponent: IComponent = {
                 id: data.id ?? 0,
                 title: data.title ?? 'Без названия',
                 description: data.description ?? '',
@@ -69,7 +69,7 @@ export const fetchComponentById = createAsyncThunk(
                 status: data.status ?? false,
             };
 
-            return mappedFactor;
+            return mappedComponent;
         } catch (err) {
             return rejectWithValue(id);
         }
@@ -77,7 +77,7 @@ export const fetchComponentById = createAsyncThunk(
 );
 
 const componentsSlice = createSlice({
-    name: 'factors',
+    name: 'components',
     initialState,
     reducers: {
         clearCurrentComponent: (state) => {

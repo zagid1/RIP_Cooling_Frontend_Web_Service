@@ -3,7 +3,7 @@ import { Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import type { IComponent } from '../types';
 import { useSelector, useDispatch } from 'react-redux';
-import { addFactorToDraft } from '../store/slices/cartSlice';
+import { addComponentToDraft } from '../store/slices/cartSlice';
 import type { RootState, AppDispatch } from '../store';
 import './styles/ComponentCard.css'
 
@@ -19,7 +19,7 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({ component }) => {
 
     const handleAdd = () => {
         if (component.id) {
-            dispatch(addFactorToDraft(component.id));
+            dispatch(addComponentToDraft(component.id));
         }
     };
 

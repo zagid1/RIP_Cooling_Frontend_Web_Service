@@ -31,7 +31,7 @@ export const fetchCartBadge = createAsyncThunk(
     }
 );
 
-// Добавление фактора в черновик 
+// Добавление компонента в черновик 
 export const addComponentToDraft = createAsyncThunk(
     'cart/addToDraft',
     async (factorId: number, { dispatch, rejectWithValue }) => {
@@ -53,7 +53,7 @@ const cartSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchCartBadge.fulfilled, (state, action) => {
-                state.cooling_id = action.payload.frax_id || null;
+                state.cooling_id = action.payload.request_id || null;
                 state.count = action.payload.count || 0;
             })
             .addCase(fetchCartBadge.rejected, (state) => {
