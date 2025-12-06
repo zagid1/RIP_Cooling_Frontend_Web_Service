@@ -1,24 +1,25 @@
 // Navbar.tsx
 import { Navbar, Container, Nav, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { PersonCircle, BoxArrowRight } from 'react-bootstrap-icons';
 import { logoutUser } from '../store/slices/userSlice';
-import { deleteOrder } from '../store/slices/fraxSlice'; 
+import { deleteOrder } from '../store/slices/coolingSlice'; 
 import { fetchCartBadge } from '../store/slices/cartSlice';
+import type { RootState, AppDispatch } from '../store';
 import './styles/Navbar.css'
 
 export const AppNavbar = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const { isAuthenticated, user } = useSelector((state: RootState) => state.user);
-    const { component_id } = useSelector((state: RootState) => state.cart);
+    const { cooling_id } = useSelector((state: RootState) => state.cart);
 
     const handleLogout = async () => {
-        if (component_id) {
+        if (cooling_id) {
             try {
-                await dispatch(deleteOrder(component_id)).unwrap();
-                console.log(`Черновик ${component_id} был автоматически удален при выходе.`);
+                await dispatch(deleteOrder(cooling_id)).unwrap();
+                console.log(`Черновик ${cooling_id} был автоматически удален при выходе.`);
             } catch (e) {
                 console.error("Не удалось удалить черновик при выходе", e);
             }
@@ -43,7 +44,7 @@ export const AppNavbar = () => {
 
                      {isAuthenticated ? (
                             <>
-                                <Nav.Link as={Link} to="/orders" className="text-white">
+                                <Nav.Link as={Link} to="/cooling" className="text-white">
                                     Мои заявки
                                 </Nav.Link>
 

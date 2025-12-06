@@ -3,6 +3,11 @@ import { AppNavbar } from './components/Navbar';
 import { HomePage } from './pages/CoolSystemHomePage';
 import { ComponentsListPage } from './pages/ComponentsListPage';
 import { ComponentDetailPage } from './pages/ComponentDetailPage';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
+import { ProfilePage } from './pages/ProfilePage';
+import { OrdersListPage } from './pages/OrdersListPage';
+import { OrderPage } from './pages/OrderPage';
 
 const MainLayout = () => (
     <>

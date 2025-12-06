@@ -10,52 +10,47 @@
  * ---------------------------------------------------------------
  */
 
-export interface RIPInternalAppDsCartBadgeDTO {
+export interface DsCartBadgeDTO {
+  cooling_id?: number;
   count?: number;
-  request_id?: number;
 }
 
-export interface RIPInternalAppDsComponentCreateRequest {
-  description: string;
-  specifications?: string[];
-  tdp: number;
-  title: string;
-}
+export type DsComponentCreateRequest = object;
 
-export interface RIPInternalAppDsComponentDTO {
+export interface DsComponentDTO {
   description?: string;
   id?: number;
   image_url?: string;
-  specifications?: string[];
   status?: boolean;
+  /** Specifications pq.StringArray `json:"specifications"` */
   tdp?: number;
   title?: string;
 }
 
-export interface RIPInternalAppDsComponentInRequest {
+export interface DsComponentInRequest {
   component_id?: number;
   count?: number;
   description?: string;
   image_url?: string;
-  specifications?: string[];
+  /** Specifications pq.StringArray `json:"specifications"` */
   tdp?: number;
   title?: string;
 }
 
-export interface RIPInternalAppDsComponentToCoolingUpdateRequest {
+export interface DsComponentToCoolingUpdateRequest {
   count?: number;
 }
 
-export interface RIPInternalAppDsComponentUpdateRequest {
+export interface DsComponentUpdateRequest {
   description?: string;
-  specifications?: string[];
+  /** Specifications pq.StringArray `json:"specifications"` */
   tdp?: number;
   title?: string;
 }
 
-export interface RIPInternalAppDsCoolingDTO {
+export interface DsCoolingDTO {
   completion_date?: string;
-  components?: RIPInternalAppDsComponentInRequest[];
+  components?: DsComponentInRequest[];
   cooling_power?: number;
   creation_date?: string;
   creator_id?: number;
@@ -67,45 +62,45 @@ export interface RIPInternalAppDsCoolingDTO {
   status?: number;
 }
 
-export interface RIPInternalAppDsCoolingResolveRequest {
+export interface DsCoolingResolveRequest {
   /** "complete" | "reject" */
   action: string;
 }
 
-export interface RIPInternalAppDsCoolingUpdateRequest {
+export interface DsCoolingUpdateRequest {
   room_area?: number;
   room_height?: number;
 }
 
-export interface RIPInternalAppDsLoginResponse {
+export interface DsLoginResponse {
   token?: string;
-  user?: RIPInternalAppDsUserDTO;
+  user?: DsUserDTO;
 }
 
-export interface RIPInternalAppDsPaginatedResponse {
+export interface DsPaginatedResponse {
   items?: any;
   total?: number;
 }
 
-export interface RIPInternalAppDsUserDTO {
+export interface DsUserDTO {
   full_name?: string;
   id?: number;
   moderator?: boolean;
   username?: string;
 }
 
-export interface RIPInternalAppDsUserLoginRequest {
+export interface DsUserLoginRequest {
   password: string;
   username: string;
 }
 
-export interface RIPInternalAppDsUserRegisterRequest {
+export interface DsUserRegisterRequest {
   full_name: string;
   password: string;
   username: string;
 }
 
-export interface RIPInternalAppDsUserUpdateRequest {
+export interface DsUserUpdateRequest {
   full_name?: string;
   password?: string;
   username?: string;
@@ -287,11 +282,11 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title API для системы FRAX
+ * @title API для системы CoolingSystems
  * @version 1.0
  * @contact API Support <support@example.com>
  *
- * API-сервер для управления заявками и компонентами серверов в системе Cooling.
+ * API-сервер для управления заявками и компонентами серверов в системе CoolingSystems.
  */
 export class Api<
   SecurityDataType extends unknown,
@@ -304,15 +299,15 @@ export class Api<
      * @name LoginCreate
      * @summary Аутентификация пользователя (все)
      * @request POST:/auth/login
-     * @response `200` `RIPInternalAppDsLoginResponse` OK
+     * @response `200` `DsLoginResponse` OK
      * @response `400` `Record<string,string>` Ошибка валидации
      * @response `401` `Record<string,string>` Неверные учетные данные
      */
     loginCreate: (
-      credentials: RIPInternalAppDsUserLoginRequest,
+      credentials: DsUserLoginRequest,
       params: RequestParams = {},
     ) =>
-      this.request<RIPInternalAppDsLoginResponse, Record<string, string>>({
+      this.request<DsLoginResponse, Record<string, string>>({
         path: `/auth/login`,
         method: "POST",
         body: credentials,
@@ -348,7 +343,7 @@ export class Api<
      * @name ComponentsList
      * @summary Получить список компонентов (все)
      * @request GET:/components
-     * @response `200` `RIPInternalAppDsPaginatedResponse` OK
+     * @response `200` `DsPaginatedResponse` OK
      * @response `500` `Record<string,string>` Внутренняя ошибка сервера
      */
     componentsList: (
@@ -358,7 +353,7 @@ export class Api<
       },
       params: RequestParams = {},
     ) =>
-      this.request<RIPInternalAppDsPaginatedResponse, Record<string, string>>({
+      this.request<DsPaginatedResponse, Record<string, string>>({
         path: `/components`,
         method: "GET",
         query: query,
@@ -374,16 +369,16 @@ export class Api<
      * @summary Создать новый компонент (только модератор)
      * @request POST:/components
      * @secure
-     * @response `201` `RIPInternalAppDsComponentDTO` Created
+     * @response `201` `DsComponentDTO` Created
      * @response `400` `Record<string,string>` Ошибка валидации
      * @response `401` `Record<string,string>` Необходима авторизация
      * @response `403` `Record<string,string>` Доступ запрещен (не модератор)
      */
     componentsCreate: (
-      componentData: RIPInternalAppDsComponentCreateRequest,
+      componentData: DsComponentCreateRequest,
       params: RequestParams = {},
     ) =>
-      this.request<RIPInternalAppDsComponentDTO, Record<string, string>>({
+      this.request<DsComponentDTO, Record<string, string>>({
         path: `/components`,
         method: "POST",
         body: componentData,
@@ -400,11 +395,11 @@ export class Api<
      * @name ComponentsDetail
      * @summary Получить один компонент по ID (все)
      * @request GET:/components/{id}
-     * @response `200` `RIPInternalAppDsComponentDTO` OK
+     * @response `200` `DsComponentDTO` OK
      * @response `404` `Record<string,string>` Компонент не найден
      */
     componentsDetail: (id: number, params: RequestParams = {}) =>
-      this.request<RIPInternalAppDsComponentDTO, Record<string, string>>({
+      this.request<DsComponentDTO, Record<string, string>>({
         path: `/components/${id}`,
         method: "GET",
         format: "json",
@@ -419,17 +414,17 @@ export class Api<
      * @summary Обновить компонент (только модератор)
      * @request PUT:/components/{id}
      * @secure
-     * @response `200` `RIPInternalAppDsComponentDTO` OK
+     * @response `200` `DsComponentDTO` OK
      * @response `400` `Record<string,string>` Ошибка валидации
      * @response `401` `Record<string,string>` Необходима авторизация
      * @response `403` `Record<string,string>` Доступ запрещен
      */
     componentsUpdate: (
       id: number,
-      updateData: RIPInternalAppDsComponentUpdateRequest,
+      updateData: DsComponentUpdateRequest,
       params: RequestParams = {},
     ) =>
-      this.request<RIPInternalAppDsComponentDTO, Record<string, string>>({
+      this.request<DsComponentDTO, Record<string, string>>({
         path: `/components/${id}`,
         method: "PUT",
         body: updateData,
@@ -499,7 +494,7 @@ export class Api<
      * @summary Получить список заявок (авторизованный пользователь)
      * @request GET:/cooling
      * @secure
-     * @response `200` `(RIPInternalAppDsCoolingDTO)[]` OK
+     * @response `200` `(DsCoolingDTO)[]` OK
      * @response `401` `Record<string,string>` Необходима авторизация
      */
     coolingList: (
@@ -513,7 +508,7 @@ export class Api<
       },
       params: RequestParams = {},
     ) =>
-      this.request<RIPInternalAppDsCoolingDTO[], Record<string, string>>({
+      this.request<DsCoolingDTO[], Record<string, string>>({
         path: `/cooling`,
         method: "GET",
         query: query,
@@ -530,11 +525,11 @@ export class Api<
      * @summary Получить информацию для иконки корзины (авторизованный пользователь)
      * @request GET:/cooling/coolcart
      * @secure
-     * @response `200` `RIPInternalAppDsCartBadgeDTO` OK
+     * @response `200` `DsCartBadgeDTO` OK
      * @response `401` `Record<string,string>` Необходима авторизация
      */
     coolcartList: (params: RequestParams = {}) =>
-      this.request<RIPInternalAppDsCartBadgeDTO, Record<string, string>>({
+      this.request<DsCartBadgeDTO, Record<string, string>>({
         path: `/cooling/coolcart`,
         method: "GET",
         secure: true,
@@ -570,12 +565,12 @@ export class Api<
      * @summary Получить одну заявку по ID (авторизованный пользователь)
      * @request GET:/cooling/{id}
      * @secure
-     * @response `200` `RIPInternalAppDsCoolingDTO` OK
+     * @response `200` `DsCoolingDTO` OK
      * @response `401` `Record<string,string>` Необходима авторизация
      * @response `404` `Record<string,string>` Заявка не найдена
      */
     coolingDetail: (id: number, params: RequestParams = {}) =>
-      this.request<RIPInternalAppDsCoolingDTO, Record<string, string>>({
+      this.request<DsCoolingDTO, Record<string, string>>({
         path: `/cooling/${id}`,
         method: "GET",
         secure: true,
@@ -596,7 +591,7 @@ export class Api<
      */
     coolingUpdate: (
       id: number,
-      updateData: RIPInternalAppDsCoolingUpdateRequest,
+      updateData: DsCoolingUpdateRequest,
       params: RequestParams = {},
     ) =>
       this.request<void, Record<string, string>>({
@@ -641,7 +636,7 @@ export class Api<
     componentsUpdate: (
       id: number,
       componentId: number,
-      updateData: RIPInternalAppDsComponentToCoolingUpdateRequest,
+      updateData: DsComponentToCoolingUpdateRequest,
       params: RequestParams = {},
     ) =>
       this.request<void, Record<string, string>>({
@@ -710,7 +705,7 @@ export class Api<
      */
     resolveUpdate: (
       id: number,
-      action: RIPInternalAppDsCoolingResolveRequest,
+      action: DsCoolingResolveRequest,
       params: RequestParams = {},
     ) =>
       this.request<void, Record<string, string>>({
@@ -730,15 +725,15 @@ export class Api<
      * @name UsersCreate
      * @summary Регистрация нового пользователя (все)
      * @request POST:/users
-     * @response `201` `RIPInternalAppDsUserDTO` Created
+     * @response `201` `DsUserDTO` Created
      * @response `400` `Record<string,string>` Ошибка валидации
      * @response `500` `Record<string,string>` Внутренняя ошибка сервера
      */
     usersCreate: (
-      credentials: RIPInternalAppDsUserRegisterRequest,
+      credentials: DsUserRegisterRequest,
       params: RequestParams = {},
     ) =>
-      this.request<RIPInternalAppDsUserDTO, Record<string, string>>({
+      this.request<DsUserDTO, Record<string, string>>({
         path: `/users`,
         method: "POST",
         body: credentials,
@@ -755,12 +750,12 @@ export class Api<
      * @summary Получение данных пользователя по ID (авторизованный пользователь)
      * @request GET:/users/{id}
      * @secure
-     * @response `200` `RIPInternalAppDsUserDTO` OK
+     * @response `200` `DsUserDTO` OK
      * @response `401` `Record<string,string>` Необходима авторизация
      * @response `404` `Record<string,string>` Пользователь не найден
      */
     usersDetail: (id: number, params: RequestParams = {}) =>
-      this.request<RIPInternalAppDsUserDTO, Record<string, string>>({
+      this.request<DsUserDTO, Record<string, string>>({
         path: `/users/${id}`,
         method: "GET",
         secure: true,
@@ -783,7 +778,7 @@ export class Api<
      */
     usersUpdate: (
       id: number,
-      updateData: RIPInternalAppDsUserUpdateRequest,
+      updateData: DsUserUpdateRequest,
       params: RequestParams = {},
     ) =>
       this.request<void, Record<string, string>>({

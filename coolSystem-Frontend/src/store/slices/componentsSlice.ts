@@ -23,7 +23,7 @@ const initialState: ComponentsState = {
 
 // --- Thunk: Получение списка факторов ---
 export const fetchComponents = createAsyncThunk(
-    'factors/fetchComponents',
+    'components/fetchComponents',
     async (title: string, { rejectWithValue }) => {
         try {
             const response = await api.components.componentsList({ title });
@@ -53,7 +53,7 @@ export const fetchComponents = createAsyncThunk(
 
 // --- Thunk: Получение одного фактора ---
 export const fetchComponentById = createAsyncThunk(
-    'factors/fetchComponentById',
+    'components/fetchComponentById',
     async (id: string, { rejectWithValue }) => {
         try {
             const componentId = parseInt(id);
@@ -121,8 +121,8 @@ const componentsSlice = createSlice({
                 const id = parseInt(idStr);
                 console.log(`[Redux] Ошибка загрузки фактора ID: ${id}. Ищем в моках...`);
 
-                const factor = COMPONENTS_MOCK.items.find(f => f.id === id);
-                state.currentComponent = factor || null;
+                const component = COMPONENTS_MOCK.items.find(f => f.id === id);
+                state.currentComponent = component || null;
             });
     },
 });

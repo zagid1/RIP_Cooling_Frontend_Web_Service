@@ -6,22 +6,22 @@ import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { DefaultImage } from '../components/ComponentCard';
 import { CustomBreadcrumbs } from '../components/Breadcrumbs';
-import { fetchFactorById, clearCurrentFactor } from '../store/slices/componentsSlice';
+import { fetchComponentById, clearCurrentComponent } from '../store/slices/componentsSlice';
 import type { RootState, AppDispatch } from '../store';
 import './styles/ComponentDetailPage.css';
 
 export const ComponentDetailPage = () => {
     const { id } = useParams<{ id: string }>();
     const dispatch = useDispatch<AppDispatch>();
-    const { currentFactor: component, loading } = useSelector((state: RootState) => state.components);
+    const { currentComponent: component, loading } = useSelector((state: RootState) => state.components);
     const displayImage = component?.image_url || DefaultImage;
 
      useEffect(() => {
         if (id) {
-            dispatch(fetchFactorById(id));
+            dispatch(fetchComponentById(id));
         }
         return () => {
-            dispatch(clearCurrentFactor());
+            dispatch(clearCurrentComponent());
         };
     }, [id, dispatch]);
 

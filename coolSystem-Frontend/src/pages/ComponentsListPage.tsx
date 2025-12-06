@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Container, Row, Col, Spinner, Form, Badge, Image, Button } from 'react-bootstrap';
 import { ComponentCard } from '../components/ComponentCard';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom'; 
-import { fetchFactors } from '../store/slices/factorsSlice';
+import { fetchComponents } from '../store/slices/componentsSlice';
 import { fetchCartBadge } from '../store/slices/cartSlice';
 import { setSearchTerm } from '../store/slices/filterSlice';
 import type { RootState, AppDispatch } from '../store';
@@ -18,22 +18,22 @@ export const ComponentsListPage = () => {
     const { items: components, loading } = useSelector((state: RootState) => state.components);
     const searchTerm = useSelector((state: RootState) => state.filter.searchTerm);
     const cartState = useSelector((state: RootState) => state.cart);
-    const isCartActive = cartState.count > 0 && cartState.component_id !== null;
+    const isCartActive = cartState.count > 0 && cartState.cooling_id !== null;
     
     useEffect(() => {
-        dispatch(fetchFactors(searchTerm));
+        dispatch(fetchComponents(searchTerm));
         dispatch(fetchCartBadge());
     }, [dispatch]);
 
     const handleSearchSubmit = (event: React.FormEvent) => {
         event.preventDefault(); 
-        dispatch(fetchFactors(searchTerm));
+        dispatch(fetchComponents(searchTerm));
     };
 
     const handleCartClick = (e: React.MouseEvent) => {
         e.preventDefault();
-        if (cartState.frax_id) {
-            navigate(`/orders/${cartState.frax_id}`);
+        if (cartState.cooling_id) {
+            navigate(`/orders/${cartState.cooling_id}`);
         }
     };
 
