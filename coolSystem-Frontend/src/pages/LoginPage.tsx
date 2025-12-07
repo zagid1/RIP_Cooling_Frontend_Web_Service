@@ -15,7 +15,7 @@ export const LoginPage = () => {
 
     useEffect(() => {
         if (isAuthenticated) {
-            navigate('/factors');
+            navigate('/components');
         }
         dispatch(clearError());
     }, [isAuthenticated, navigate, dispatch]);
@@ -24,7 +24,7 @@ export const LoginPage = () => {
         e.preventDefault();
         try {
             await dispatch(loginUser(formData)).unwrap();
-            navigate('/factors');
+            navigate('/components');
         } catch (err) {
             console.error(err);
         }
@@ -37,7 +37,7 @@ export const LoginPage = () => {
                     <Card.Body className="p-5">
                         <div className="text-center mb-4">
                             <h2 className="fw-bold" style={{ color: '#495057' }}>Вход</h2>
-                            <p className="text-muted">Добро пожаловать в FRAX Calculator</p>
+                            <p className="text-muted">Пользователь в системе CoolingSystem</p>
                         </div>
 
                         {error && <Alert variant="danger" className="text-center">{error}</Alert>}

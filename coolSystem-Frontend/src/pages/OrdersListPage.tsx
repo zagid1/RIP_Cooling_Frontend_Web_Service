@@ -105,8 +105,8 @@ export const OrdersListPage = () => {
                                             : <span className="text-muted">--</span>}
                                     </td>
                                     <td>
-                                        {order.complition_date 
-                                            ? new Date(order.complition_date).toLocaleString('ru-RU') 
+                                        {order.completion_date 
+                                            ? new Date(order.completion_date).toLocaleString('ru-RU') 
                                             : <span className="text-muted">--</span>}
                                     </td>
                                 </tr>

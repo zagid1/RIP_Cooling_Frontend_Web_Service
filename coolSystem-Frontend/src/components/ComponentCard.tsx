@@ -35,13 +35,12 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({ component }) => {
                 <p className="tdp">TDP: {component.tdp || 'N/A'} Вт</p>
                 <div className="buttons-container">
                     {isAuthenticated && (
-                        <Button 
-                            className='all-btn' 
-                            variant="danger"
+                        <button 
+                            className='apply-btn' 
                             onClick={handleAdd}
                         >
                             Добавить
-                        </Button>
+                        </button>
                     )}
                     {/* <form action={`/cooling/draft/components/${component.id}`} method="POST" className="button-form"> */}
                         {/* <button className="apply-btn" type="submit">добавить</button> */}

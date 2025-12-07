@@ -2,7 +2,7 @@
 
 /* Общие стили */
 .custom-navbar {
-    height: '40px';
+    min-height: 60px;
     background: rgba(0, 0, 0, 1) !important;
     border-bottom: 1px solid #333 !important;
     padding: 0.5rem 0 !important;
@@ -21,9 +21,17 @@
     font-size: 18px !important;
     font-weight: 600 !important;
     text-decoration: none !important;
-    padding: 0.5rem 25px !important;
+    padding: 0.5rem 20px !important;
     border-radius: 6px !important;
     transition: background 0.2s ease, color 0.2s ease;
+    white-space: nowrap;
+}
+
+.nav-del {
+    color: rgba(255, 255, 255, 1) !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    cursor: default;
 }
 
 .nav-link:hover {
@@ -31,64 +39,66 @@
     background: rgba(255, 255, 255, 0.1) !important;
 }
 
-/* Фон контейнеров (осторожно: глобальное влияние) */
 .container,
 .container-fluid {
-    background-color: #000000 !important;
+    background-color: transparent !important;
 }
 
-/* Адаптивность: планшеты и ниже (max-width: 992px) */
-@media (max-width: 992px) {
-    .nav-brand {
-        font-size: 18px !important;
-    }
-
-    .nav-link {
-        font-size: 17px !important;
-        padding: 0.5rem 20px !important;
-    }
+.navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.5) !important;
+}
+.navbar-toggler:focus {
+    box-shadow: none !important; 
 }
 
-/* Адаптивность: мобильные устройства (max-width: 768px) */
-@media (max-width: 768px) {
-    .custom-navbar {
-        padding: 0.75rem 0 !important;
-    }
-
-    .nav-brand {
-        font-size: 18px !important;
-        padding: 0 15px !important;
-    }
-
-    .nav-link {
-        font-size: 16px !important;
-        padding: 0.6rem 15px !important;
-        margin: 0.25rem 0 !important;
-    }
-
-    /* Стили для раскрытого мобильного меню */
+/* --- АДАПТИВНОСТЬ ДЛЯ БУРГЕР МЕНЮ (< 992px) --- */
+@media (max-width: 991px) {
+    /* Настройки выпадающего контейнера */
     .navbar-collapse {
-        padding: 0.5rem 0 !important;
+        background: #000;
+        padding-top: 10px;
+        padding-bottom: 10px;
     }
 
+    /* Принудительное выравнивание элементов влево */
     .navbar-nav {
         align-items: flex-start !important;
-        padding: 0 15px !important;
+        padding-left: 0 !important;
+        width: 100%;
     }
 
-    .nav-link:hover {
-        background: rgba(255, 255, 255, 0.15) !important;
+    /* Стили ссылок в мобильном меню */
+    .nav-link {
+        font-size: 16px !important;
+        padding: 8px 0 !important; /* Убрал боковые отступы, чтобы текст был ровно слева */
+        margin: 0 !important;      /* Убрал лишние отступы между элементами */
+        width: 100%;
+        text-align: left;
+        display: block !important;
+    }
+
+    /* Специально для кнопок внутри меню (Выход, Регистрация) */
+    .navbar-nav .btn {
+        width: 100%;
+        text-align: left;
+        padding-left: 0 !important;
+        justify-content: flex-start !important;
+    }
+    
+    /* Убираем разделитель (на всякий случай дублируем в CSS) */
+    .nav-del {
+        display: none !important;
     }
 }
 
-/* Очень маленькие экраны (max-width: 480px) */
+@media (max-width: 768px) {
+    .nav-brand {
+        font-size: 18px !important;
+    }
+}
+
 @media (max-width: 480px) {
     .nav-brand {
         font-size: 17px !important;
-    }
-
-    .nav-link {
-        font-size: 12px !important;
-        padding: 0.6rem 12px !important;
     }
 }

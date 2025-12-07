@@ -53,7 +53,7 @@ const cartSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchCartBadge.fulfilled, (state, action) => {
-                state.cooling_id = action.payload.request_id || null;
+                state.cooling_id = action.payload.cooling_id || null;
                 state.count = action.payload.count || 0;
             })
             .addCase(fetchCartBadge.rejected, (state) => {

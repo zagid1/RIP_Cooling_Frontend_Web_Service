@@ -27,59 +27,73 @@ export const AppNavbar = () => {
         dispatch(logoutUser())
             .then(() => {
                 dispatch(fetchCartBadge());
-                navigate('/login');
+                navigate('/components');
             });
     };
 
     return (
-        <Navbar className="custom-navbar" sticky="top">
-            <Container fluid className='px-7 h-100'>
-                <Navbar.Brand className='nav-brand h-100 d-flex align-items-center' as={Link} to="/">
+        // collapseOnSelect - заставляет меню закрываться при выборе пункта
+        <Navbar className="custom-navbar" sticky="top" expand="lg" variant="dark" collapseOnSelect>
+            <Container fluid className='px-4'>
+                <Navbar.Brand className='nav-brand d-flex align-items-center' as={Link} to="/">
                     CoolingSystems.org
                 </Navbar.Brand>
-                <Nav className="ms-auto h-100">
-                    <Nav.Link className='nav-link h-100 d-flex align-items-center px-3' as={Link} to="/components">
-                        Компоненты сервера
-                    </Nav.Link>
+                
+                <Navbar.Toggle aria-controls="responsive-navbar-nav" />
 
-                     {isAuthenticated ? (
+                <Navbar.Collapse id="responsive-navbar-nav">
+                    <Nav className="ms-auto align-items-lg-center align-items-start">
+                        {/* eventKey нужен для корректной работы collapseOnSelect, если as={Link} */}
+                        <Nav.Link eventKey="components" className='nav-link d-flex align-items-center' as={Link} to="/components">
+                            Компоненты сервера
+                        </Nav.Link>
+
+                        {isAuthenticated ? (
                             <>
-                                <Nav.Link as={Link} to="/cooling" className="text-white">
+                                <Nav.Link eventKey="cooling" as={Link} to="/cooling" className="nav-link text-white">
                                     Мои заявки
                                 </Nav.Link>
 
-                                <div className="text-white mx-2 d-none d-lg-block">|</div>
+                                {/* d-none d-lg-flex: Скрыто на мобильных, Flex на больших экранах */}
+                                <div className="nav-del d-none d-lg-flex align-items-center px-2">|</div>
 
-                                <Nav.Link as={Link} to="/profile" className="text-white d-flex align-items-center gap-2">
+                                <Nav.Link eventKey="profile" as={Link} to="/profile" className="nav-link text-white d-flex align-items-center gap-2">
                                     <PersonCircle size={20} />
                                     <span className="fw-bold">
                                         {user?.username || user?.full_name || 'Пользователь'}
                                     </span>
                                 </Nav.Link>
 
-                                <Button 
-                                    variant="outline-light" 
-                                    size="sm" 
-                                    onClick={handleLogout}
-                                    className="d-flex align-items-center gap-2"
-                                >
-                                    <BoxArrowRight /> Выход
-                                </Button>
+                                {/* Оборачиваем кнопку в Nav.Link или div, чтобы стили работали корректно в потоке */}
+                                <div className="nav-item mt-2 mt-lg-0">
+                                    <Button 
+                                        variant="outline-light" 
+                                        size="sm" 
+                                        onClick={handleLogout}
+                                        className="d-flex align-items-center px-3 w-100 justify-content-start justify-content-lg-center"
+                                    >
+                                        <BoxArrowRight className="me-2"/> Выход
+                                    </Button>
+                                </div>
                             </>
                         ) : (
                             <>
-                                <div className="text-white mx-2 d-none d-lg-block">|</div>
-                                <Nav.Link as={Link} to="/login" className="text-white">
+                                {/* d-none d-lg-flex: Скрыто на мобильных */}
+                                <div className="nav-del d-none d-lg-flex align-items-center px-2">|</div>
+                                
+                                <Nav.Link eventKey="login" as={Link} to="/login" className="nav-link text-white">
                                     Вход
                                 </Nav.Link>
-                                <Link to="/register">
-                                    <Button variant="light" className="text-danger fw-bold">
+                                
+                                <Nav.Link eventKey="register" as={Link} to="/register" className="p-0 ms-lg-2 mt-2 mt-lg-0">
+                                    <Button className="nav-link d-flex align-items-center justify-content-center px-3 w-100">
                                         Регистрация
                                     </Button>
-                                </Link>
+                                </Nav.Link>
                             </>
                         )}
-                </Nav>
+                    </Nav>
+                </Navbar.Collapse>
             </Container>
         </Navbar>
     );

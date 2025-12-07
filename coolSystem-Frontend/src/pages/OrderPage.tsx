@@ -5,8 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { 
     fetchOrderById, 
     updateOrderFields, 
-    updateFactorDescription, 
-    removeFactorFromOrder,
+    updateComponentCount, 
+    removeComponentFromOrder,
     submitOrder,
     deleteOrder,
     resetOperationSuccess,
@@ -28,7 +28,7 @@ export const OrderPage = () => {
     const dispatch = useDispatch<AppDispatch>();
     const { currentOrder, loading, operationSuccess } = useSelector((state: RootState) => state.cooling);
     const [formData, setFormData] = useState({ RoomHeight: 0, RoomArea: 0 });
-    const [descriptions, setDescriptions] = useState<{[key: number]: string}>({});
+    const [descriptions, setDescriptions] = useState<{[key: number]: number}>({});
 
     useEffect(() => {
         if (id) {
@@ -40,14 +40,12 @@ export const OrderPage = () => {
         useEffect(() => {
         if (currentOrder) {
             setFormData({
-                age: currentOrder.age || 0,
-                gender: currentOrder.gender || false,
-                weight: currentOrder.weight || 0,
-                height: currentOrder.height || 0
+                RoomArea: currentOrder.room_area || 0,
+                RoomHeight: currentOrder.room_height || 0,
             });
-            const descMap: {[key: number]: string} = {};
-            currentOrder.factors?.forEach(f => {
-                if(f.factor_id) descMap[f.factor_id] = f.description || '';
+            const descMap: {[key: number]: number} = {};
+            currentOrder.components?.forEach(f => {
+                if(f.component_id) descMap[f.component_id] = f.count || 1;
             });
             setDescriptions(descMap);
         }
@@ -97,7 +95,7 @@ export const OrderPage = () => {
 
     const handleSaveOneDescription = (factorId: number) => {
         if(currentOrder.id && descriptions[factorId] !== undefined) {
-            dispatch(updateFactorDescription({
+            dispatch(updateComponentCount({
                 orderId: currentOrder.id,
                 factorId,
                 desc: descriptions[factorId]
@@ -208,7 +206,7 @@ export const OrderPage = () => {
                                         <Button 
                                             variant="link" className="text-muted p-0 ms-2"
                                             title="Удалить из заявки"
-                                            onClick={() => dispatch(removeFactorFromOrder({ orderId: currentOrder.id!, factorId: f.factor_id! }))}
+                                            onClick={() => dispatch(removeComponentFromOrder({ orderId: currentOrder.id!, factorId: f.factor_id! }))}
                                         >
                                             <Trash size={20} />
                                         </Button>

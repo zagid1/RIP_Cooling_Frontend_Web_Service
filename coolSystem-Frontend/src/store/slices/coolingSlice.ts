@@ -54,12 +54,9 @@ export const fetchOrderById = createAsyncThunk(
             const mappedOrder: DsCoolingDTO = {
                 id: data.ID ?? data.id,
                 status: data.Status ?? data.status ?? 1, 
-                age: data.Age ?? data.age ?? 0,
-                gender: data.Gender ?? data.gender ?? false,
-                weight: data.Weight ?? data.weight ?? 0,
-                height: data.Height ?? data.height ?? 0,
-                POF: data.POF ?? data.pof ?? 0,
-                PHF: data.PHF ?? data.phf ?? 0,
+                room_area: data.room_area ?? 0,
+                room_height: data.room_height ?? 0,
+                cooling_power: data.cooling_power ?? 0,
                 components: mappedComponents
             };
             
@@ -77,10 +74,8 @@ export const updateOrderFields = createAsyncThunk(
     async ({ id, data }: { id: number; data: DsCoolingUpdateRequest }, { rejectWithValue }) => {
         try {
             const payload = {
-                Age: data.age,
-                Gender: data.gender,
-                Weight: data.weight,
-                Height: data.height
+                Room_Height: data.room_height,
+                Room_Area: data.room_area
             };            
             // @ts-ignore
             await api.cooling.coolingUpdate(id, payload);
@@ -92,13 +87,13 @@ export const updateOrderFields = createAsyncThunk(
 );
 
 // --- 4. Обновление описания фактора (М-М связь) ---
-export const updateComponentDescription = createAsyncThunk(
+export const updateComponentCount = createAsyncThunk(
     'cooling/updateComponentNum',
-    async ({ orderId, componentId, desc }: { orderId: number; componentId: number; desc: string }, { rejectWithValue }) => {
+    async ({ orderId, componentId, count }: { orderId: number; componentId: number; count: number }, { rejectWithValue }) => {
         try {
-            const data: DsComponentToCoolingUpdateRequest = { description: desc };
+            const data: DsComponentToCoolingUpdateRequest = { count: count };
             await api.cooling.componentsUpdate(orderId, componentId, data);
-            return { componentId, desc };
+            return { componentId, count };
         } catch (err) {
             return rejectWithValue('Не удалось обновить количество');
         }
@@ -175,14 +170,14 @@ const coolingSlice = createSlice({
                     state.currentOrder = { ...state.currentOrder, ...action.payload };
                 }
             })
-            // Обновление описания фактора
-            .addCase(updateComponentDescription.fulfilled, (state, action) => {
+            // Обновление количества компонента в заявке
+            .addCase(updateComponentCount.fulfilled, (state, action) => {
                 if (state.currentOrder && state.currentOrder.components) {
-                    const component = state.currentOrder.components.find(f => f.component_id === action.payload.componentId);
-                    if (component) component.description = action.payload.desc;
+                    const cooling = state.currentOrder.components.find(f => f.component_id === action.payload.componentId);
+                    if (cooling) cooling.count = action.payload.count;
                 }
             })
-            // Удаление фактора
+            // Удаление компонента
             .addCase(removeComponentFromOrder.fulfilled, (state, action) => {
                 if (state.currentOrder && state.currentOrder.components) {
                     state.currentOrder.components = state.currentOrder.components.filter(f => f.component_id !== action.payload);
