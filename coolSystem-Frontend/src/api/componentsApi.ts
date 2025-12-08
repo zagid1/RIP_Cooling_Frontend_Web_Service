@@ -2,17 +2,10 @@ import type { IPaginatedComponents, IComponent, ICartBadge } from '../types';
 import { COMPONENTS_MOCK } from './mock';
 //import { getApiBase } from '../config';
 
-// 1. Надежный способ определить, что мы в Tauri (работает всегда)
 // @ts-ignore
 const isTauri = !!window.__TAURI__;
 
-// 2. Настройка адреса
-// Если сервер запущен на ТОМ ЖЕ компьютере, используйте localhost.
-// IP 10.167... может измениться завтра, а localhost вечен.
-// ВАЖНО: http, а не https (если у вас нет SSL сертификата на локалке)
-const BACKEND_URL = 'http://localhost:8080'; 
-
-// Логируем для отладки (увидите в консоли devtools)
+const BACKEND_URL = 'http://10.167.28.51:8080'; 
 console.log('Environment:', isTauri ? 'Tauri App' : 'Browser');
 console.log('Backend URL:', BACKEND_URL);
 
