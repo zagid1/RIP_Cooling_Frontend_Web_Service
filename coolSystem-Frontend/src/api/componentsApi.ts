@@ -66,7 +66,8 @@ export const getCartBadge = async (): Promise<ICartBadge> => {
         return await response.json();
 
     } catch (error) {
-        console.warn('Could not fetch cart data, assuming cart is empty.', error);
-        return { cooling_id: null, count: 0 };
+        console.warn('Could not fetch cart data, assuming cart is empty.', error, );
+        console.log('Current cart: cooling_id: null, count: -1')
+        return { cooling_id: null, count: -1 };
     }
 };
