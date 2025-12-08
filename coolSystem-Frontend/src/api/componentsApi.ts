@@ -2,16 +2,23 @@ import type { IPaginatedComponents, IComponent, ICartBadge } from '../types';
 import { COMPONENTS_MOCK } from './mock';
 //import { getApiBase } from '../config';
 
-//const API_BASE = '/api';
+// 1. Надежный способ определить, что мы в Tauri (работает всегда)
+// @ts-ignore
+const isTauri = !!window.__TAURI__;
 
-// const isTauri = import.meta.env.VITE_TARGET === 'tauri';
-// const BACKEND_IP = 'https://10.241.187.182:8080/'; 
-// const API_BASE_URL = isTauri ? `${BACKEND_IP}/api` : '/api';
+// 2. Настройка адреса
+// Если сервер запущен на ТОМ ЖЕ компьютере, используйте localhost.
+// IP 10.167... может измениться завтра, а localhost вечен.
+// ВАЖНО: http, а не https (если у вас нет SSL сертификата на локалке)
+const BACKEND_URL = 'http://localhost:8080'; 
 
-//const API_BASE = getApiBase();
-const isTauri = import.meta.env.VITE_TARGET === 'tauri';
-const BACKEND_IP = 'http://10.225.38.51:8080/';
-const API_BASE = isTauri ? `${BACKEND_IP}/api` : '/api';
+// Логируем для отладки (увидите в консоли devtools)
+console.log('Environment:', isTauri ? 'Tauri App' : 'Browser');
+console.log('Backend URL:', BACKEND_URL);
+
+const API_BASE = isTauri 
+    ? `${BACKEND_URL}/api` // В приложении: http://localhost:8080/api
+    : '/api';              // В браузере (dev): прокси
 
 // Получение списка факторов с фильтраией по названию
 export const getComponents = async (title: string): Promise<IPaginatedComponents> => {
