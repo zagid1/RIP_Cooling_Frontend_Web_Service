@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Form, Button, Badge } from 'react-bootstrap';
+import { Container, Card, Form, Button, Badge } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { PersonCircle, PencilSquare, CheckLg, XLg, BoxArrowRight } from 'react-bootstrap-icons';
@@ -58,124 +58,128 @@ export const ProfilePage = () => {
     if (!user) return null;
 
     return (
-        <div className="background-color-profile">
-            <Container className="pt-5 mt-5">
-                <Row className="justify-content-center">
-                    <Col lg={8}>
-                        <Card className="shadow-sm border-0 rounded-4">
-                            <Card.Header className="bg-white border-0 pt-4 pb-0 px-4 d-flex justify-content-between align-items-center">
-                                <h3 className="fw-bold mb-0" style={{ color: '#495057' }}>Личный кабинет</h3>
-                                {user.moderator && (
-                                    <Badge bg="warning" text="dark" className="fs-6">
-                                        MODERATOR
-                                    </Badge>
-                                )}
-                            </Card.Header>
-                            <Card.Body className="p-4">
-                                <div className="d-flex align-items-center mb-4 pb-4 border-bottom">
-                                    <div className="me-4">
-                                        <PersonCircle size={80} color="#495057" />
-                                    </div>
-                                    <div>
-                                        <h4 className="fw-bold mb-1">{user.full_name}</h4>
-                                        <p className="text-muted mb-0">@{user.username}</p>
-                                        <p className="text-muted small">ID: {user.id}</p>
-                                    </div>
+        // Фон страницы черный
+        <div className="min-vh-100 bg-black">
+            {/* Используем flex для центрирования вместо Row/Col */}
+            <Container className="pt-5 mt-5 d-flex justify-content-center">
+                {/* Обертка для ограничения ширины карточки (аналог Col lg={8}) */}
+                <div style={{ width: '100%', maxWidth: '800px' }}>
+                    
+                    {/* Карточка: Сплошной серый цвет (#343a40), без границ */}
+                    <Card className="shadow rounded-4 text-white border-0" style={{ backgroundColor: '#343a40' }}>
+                        
+                        <Card.Header className="bg-transparent border-0 pt-4 pb-0 px-4 d-flex justify-content-between align-items-center">
+                            <h3 className="fw-bold mb-0 text-white">Личный кабинет</h3>
+                            {user.moderator && (
+                                <Badge bg="warning" text="dark" className="fs-6">
+                                    MODERATOR
+                                </Badge>
+                            )}
+                        </Card.Header>
+                        
+                        <Card.Body className="p-4">
+                            <div className="d-flex align-items-center mb-4 pb-4 border-bottom border-secondary">
+                                <div className="me-4">
+                                    <PersonCircle size={80} color="white" />
+                                </div>
+                                <div>
+                                    <h4 className="fw-bold mb-1 text-white">{user.full_name}</h4>
+                                    <p className="text-light opacity-75 mb-0">@{user.username}</p>
+                                    <p className="text-light opacity-50 small">ID: {user.id}</p>
+                                </div>
+                            </div>
+
+                            <Form>
+                                {/* Замена Row/Col для полей ввода на Flexbox */}
+                                <div className="d-flex flex-column flex-md-row gap-3 mb-3">
+                                    <Form.Group className="w-100">
+                                        <Form.Label className="text-light fw-medium">ФИО</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            value={isEditing ? editData.full_name : user.full_name || ''}
+                                            onChange={(e) => setEditData({ ...editData, full_name: e.target.value })}
+                                            disabled={!isEditing}
+                                            className={`bg-dark text-white border-0 ${isEditing ? 'border-bottom border-danger rounded-0' : ''}`}
+                                            style={{ backgroundColor: '#212529' }}
+                                        />
+                                    </Form.Group>
+                                    
+                                    <Form.Group className="w-100">
+                                        <Form.Label className="text-light fw-medium">Логин</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            value={isEditing ? editData.username : user.username || ''}
+                                            onChange={(e) => setEditData({ ...editData, username: e.target.value })}
+                                            disabled={!isEditing}
+                                            className={`bg-dark text-white border-0 ${isEditing ? 'border-bottom border-danger rounded-0' : ''}`}
+                                            style={{ backgroundColor: '#212529' }}
+                                        />
+                                    </Form.Group>
                                 </div>
 
-                                <Form>
-                                    <Row className="g-3">
-                                        <Col md={6}>
-                                            <Form.Group>
-                                                <Form.Label style={{ color: '#495057', fontWeight: '500' }}>ФИО</Form.Label>
-                                                <Form.Control
-                                                    type="text"
-                                                    value={isEditing ? editData.full_name : user.full_name || ''}
-                                                    onChange={(e) => setEditData({ ...editData, full_name: e.target.value })}
-                                                    disabled={!isEditing}
-                                                    className={isEditing ? 'border-danger' : 'bg-light'}
-                                                />
-                                            </Form.Group>
-                                        </Col>
-                                        
-                                        <Col md={6}>
-                                            <Form.Group>
-                                                <Form.Label style={{ color: '#495057', fontWeight: '500' }}>Логин</Form.Label>
-                                                <Form.Control
-                                                    type="text"
-                                                    value={isEditing ? editData.username : user.username || ''}
-                                                    onChange={(e) => setEditData({ ...editData, username: e.target.value })}
-                                                    disabled={!isEditing}
-                                                    className={isEditing ? 'border-danger' : 'bg-light'}
-                                                />
-                                            </Form.Group>
-                                        </Col>
+                                <Form.Group className="mb-3">
+                                    <Form.Label className="text-light fw-medium">
+                                        {isEditing ? 'Новый пароль' : 'Пароль'}
+                                    </Form.Label>
+                                    <Form.Control
+                                        type="password"
+                                        value={isEditing ? editData.password : '********'}
+                                        placeholder={isEditing ? 'Введите новый пароль для изменения' : ''}
+                                        onChange={(e) => setEditData({ ...editData, password: e.target.value })}
+                                        disabled={!isEditing}
+                                        className={`bg-dark text-white border-0 ${isEditing ? 'border-bottom border-danger rounded-0' : ''}`}
+                                        style={{ backgroundColor: '#212529' }}
+                                    />
+                                    {isEditing && (
+                                        <Form.Text className="text-light opacity-75">
+                                            Оставьте пустым, если не хотите менять пароль.
+                                        </Form.Text>
+                                    )}
+                                </Form.Group>
 
-                                        <Col md={12}>
-                                            <Form.Group>
-                                                <Form.Label style={{ color: '#495057', fontWeight: '500' }}>
-                                                    {isEditing ? 'Новый пароль' : 'Пароль'}
-                                                </Form.Label>
-                                                <Form.Control
-                                                    type="password"
-                                                    value={isEditing ? editData.password : '********'}
-                                                    placeholder={isEditing ? 'Введите новый пароль для изменения' : ''}
-                                                    onChange={(e) => setEditData({ ...editData, password: e.target.value })}
-                                                    disabled={!isEditing}
-                                                    className={isEditing ? 'border-danger' : 'bg-light'}
-                                                />
-                                                {isEditing && (
-                                                    <Form.Text className="text-muted">
-                                                        Оставьте пустым, если не хотите менять пароль.
-                                                    </Form.Text>
-                                                )}
-                                            </Form.Group>
-                                        </Col>
-                                    </Row>
-
-                                    <div className="d-flex justify-content-between align-items-center mt-5">
-                                        <div>
-                                            {!isEditing ? (
+                                <div className="d-flex justify-content-between align-items-center mt-5">
+                                    <div>
+                                        {!isEditing ? (
+                                            <Button 
+                                                variant="light" 
+                                                onClick={() => setIsEditing(true)}
+                                                className="d-flex align-items-center gap-2"
+                                            >
+                                                <PencilSquare /> Редактировать
+                                            </Button>
+                                        ) : (
+                                            <div className="d-flex gap-2">
                                                 <Button 
-                                                    variant="outline-secondary" 
-                                                    onClick={() => setIsEditing(true)}
+                                                    variant="success" 
+                                                    onClick={handleSave}
                                                     className="d-flex align-items-center gap-2"
                                                 >
-                                                    <PencilSquare /> Редактировать
+                                                    <CheckLg /> Сохранить
                                                 </Button>
-                                            ) : (
-                                                <div className="d-flex gap-2">
-                                                    <Button 
-                                                        variant="success" 
-                                                        onClick={handleSave}
-                                                        className="d-flex align-items-center gap-2"
-                                                    >
-                                                        <CheckLg /> Сохранить
-                                                    </Button>
-                                                    <Button 
-                                                        variant="outline-danger" 
-                                                        onClick={handleCancel}
-                                                        className="d-flex align-items-center gap-2"
-                                                    >
-                                                        <XLg /> Отмена
-                                                    </Button>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        <Button 
-                                            variant="danger" 
-                                            onClick={handleLogout}
-                                            className="d-flex align-items-center gap-2"
-                                        >
-                                            <BoxArrowRight /> Выйти из аккаунта
-                                        </Button>
+                                                <Button 
+                                                    variant="outline-light" 
+                                                    onClick={handleCancel}
+                                                    className="d-flex align-items-center gap-2"
+                                                >
+                                                    <XLg /> Отмена
+                                                </Button>
+                                            </div>
+                                        )}
                                     </div>
-                                </Form>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                </Row>
+
+                                    {/* Кнопка выхода белая (variant="light") */}
+                                    <Button 
+                                        variant="light" 
+                                        onClick={handleLogout}
+                                        className="d-flex align-items-center gap-2 fw-bold"
+                                    >
+                                        <BoxArrowRight /> Выйти из аккаунта
+                                    </Button>
+                                </div>
+                            </Form>
+                        </Card.Body>
+                    </Card>
+                </div>
             </Container>
         </div>
     );

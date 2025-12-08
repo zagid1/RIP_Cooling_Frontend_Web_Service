@@ -1,14 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { api } from '../../api';
 import { logoutUser } from './userSlice';
-
-
+import type { RootState } from '../index'; // Убедитесь, что импорт есть
 
 interface CartState {
     cooling_id: number | null;
     count: number;
     loading: boolean;
-    error: string | null
+    error: string | null;
 }
 
 const initialState: CartState = {
@@ -18,10 +17,22 @@ const initialState: CartState = {
     error: null,
 };
 
+
 // Получение бейджика
-export const fetchCartBadge = createAsyncThunk(
+export const fetchCartBadge = createAsyncThunk<
+    any,
+    void,
+    { state: RootState }
+>(
     'cart/fetchCartBadge',
-    async (_, { rejectWithValue }) => {
+    async (_, { getState, rejectWithValue }) => {
+        const state = getState();
+        
+        // Если пользователь не авторизован, не делаем запрос
+        if (!state.user.isAuthenticated) {
+            return rejectWithValue('User is not authenticated');
+        }
+
         try {
             const response = await api.cooling.coolcartList();
             return response.data;
@@ -31,24 +42,38 @@ export const fetchCartBadge = createAsyncThunk(
     }
 );
 
-// Добавление компонента в черновик 
-export const addComponentToDraft = createAsyncThunk(
+// Добавление компонента в черновик
+export const addComponentToDraft = createAsyncThunk<
+    number,
+    number,
+    { state: RootState } // Типизация нужна, чтобы dispatch понимал fetchCartBadge
+>(
     'cart/addToDraft',
-    async (factorId: number, { dispatch, rejectWithValue }) => {
+    async (factorId, { dispatch, rejectWithValue }) => {
         try {
             await api.cooling.draftComponentsCreate(factorId);
+            // Обновляем бейджик корзины
             dispatch(fetchCartBadge());
             return factorId;
         } catch (error: any) {
-            alert("Ошибка при добавлении: " + (error.response?.data?.description || "Неизвестная ошибка"));
+            const errorMessage = error.response?.data?.description || "Неизвестная ошибка";
+
+            // Игнорируем ошибку дубликата (просто не показываем алерт)
+            if (errorMessage.includes("уже добавлен") || errorMessage.includes("already")) {
+                console.log("Компонент уже в корзине");
+                return factorId;
+            }
+
+            alert("Ошибка при добавлении: " + errorMessage);
             return rejectWithValue('Failed to add');
         }
     }
 );
 
+// Слайс
 const cartSlice = createSlice({
     name: 'cart',
-    initialState,
+    initialState, 
     reducers: {},
     extraReducers: (builder) => {
         builder

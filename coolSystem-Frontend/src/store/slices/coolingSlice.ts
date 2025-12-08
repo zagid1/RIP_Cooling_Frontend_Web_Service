@@ -45,12 +45,18 @@ export const fetchOrderById = createAsyncThunk(
         try {
             const response = await api.cooling.coolingDetail(parseInt(id));
             const data: any = response.data;
+            
+            // Посмотрим, что реально приходит до маппинга (для отладки)
+            console.log('Сырые данные от API:', data);
+
             const mappedComponents = (data.Components || data.components || []).map((f: any) => ({
                 component_id: f.ComponentID ?? f.component_id ?? 0,
                 title: f.Title ?? f.title ?? 'Без названия',
-                image: f.Image ?? f.image ?? '',
-                description: f.Description ?? f.description ?? ''
+                image_url: f.Image_url ?? f.image_url ?? '',
+                description: f.Description ?? f.description ?? '',
+                count: f.Count ?? f.count  ?? 1 
             }));
+
             const mappedOrder: DsCoolingDTO = {
                 id: data.ID ?? data.id,
                 status: data.Status ?? data.status ?? 1, 

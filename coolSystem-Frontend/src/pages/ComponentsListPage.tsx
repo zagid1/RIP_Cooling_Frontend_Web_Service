@@ -15,15 +15,27 @@ const cartImage = `/mock_images/cart.png`;
 export const ComponentsListPage = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
+    
+    // 1. Получаем статус авторизации из Redux
+    // (убедитесь, что в userSlice поле называется isAuthenticated, судя по прошлому коду - так и есть)
+    const isAuthenticated = useSelector((state: RootState) => state.user.isAuthenticated);
+
     const { items: components, loading } = useSelector((state: RootState) => state.components);
     const searchTerm = useSelector((state: RootState) => state.filter.searchTerm);
     const cartState = useSelector((state: RootState) => state.cart);
     const isCartActive = cartState.count > 0 && cartState.cooling_id !== null;
     
     useEffect(() => {
+        // Компоненты грузим всегда (они публичные)
         dispatch(fetchComponents(searchTerm));
-        dispatch(fetchCartBadge());
-    }, [dispatch]);
+
+        // 2. Корзину грузим ТОЛЬКО если пользователь вошел в систему
+        if (isAuthenticated) {
+            dispatch(fetchCartBadge());
+        }
+        
+        // Добавляем isAuthenticated в зависимости, чтобы при входе данные подгрузились
+    }, [dispatch, isAuthenticated]); 
 
     const handleSearchSubmit = (event: React.FormEvent) => {
         event.preventDefault(); 
@@ -62,6 +74,7 @@ export const ComponentsListPage = () => {
                                 {loading ? 'Поиск...' : 'Искать'}
                             </Button>
 
+                            {/* Скрываем/дизейблим корзину или показываем логин, если не авторизован */}
                             <div className="cart-wrapper">
                                 {isCartActive ? (                               
                                     <a 

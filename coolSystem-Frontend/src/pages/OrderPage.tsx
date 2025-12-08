@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Form, Button, Image } from 'react-bootstrap';
+import { Container, Card, Form, Button, Image, Spinner } from 'react-bootstrap';
 import { useParams, Link } from 'react-router-dom';
+import { DefaultImage } from '../components/ComponentCard';
 import { useDispatch, useSelector } from 'react-redux';
 import { 
     fetchOrderById, 
@@ -12,12 +13,8 @@ import {
     resetOperationSuccess,
     clearCurrentOrder
 } from '../store/slices/coolingSlice';
-import { Trash, CheckCircleFill, ExclamationCircle, Floppy } from 'react-bootstrap-icons'; // Добавил Floppy
+import { Trash, CheckCircleFill, ExclamationCircle, Floppy } from 'react-bootstrap-icons';
 import type { AppDispatch, RootState } from '../store';
-
-
-
-export const DefaultImage = '/mock_images/default.png';
 
 const STATUS_DRAFT = 1;
 const STATUS_COMPLETED = 4;
@@ -27,8 +24,9 @@ export const OrderPage = () => {
     const { id } = useParams<{ id: string }>();
     const dispatch = useDispatch<AppDispatch>();
     const { currentOrder, loading, operationSuccess } = useSelector((state: RootState) => state.cooling);
-    const [formData, setFormData] = useState({ RoomHeight: 0, RoomArea: 0 });
-    const [descriptions, setDescriptions] = useState<{[key: number]: number}>({});
+    
+    const [formData, setFormData] = useState({ room_height: 0, room_area: 0 });
+    const [counts, setCounts] = useState<{[key: number]: number}>({});
 
     useEffect(() => {
         if (id) {
@@ -37,233 +35,275 @@ export const OrderPage = () => {
         return () => { dispatch(clearCurrentOrder()); dispatch(resetOperationSuccess()); }
     }, [id, dispatch]);
 
-        useEffect(() => {
+    useEffect(() => {
         if (currentOrder) {
+            // 1. Заполняем основные поля
             setFormData({
-                RoomArea: currentOrder.room_area || 0,
-                RoomHeight: currentOrder.room_height || 0,
+                room_area: currentOrder.room_area || 0,
+                room_height: currentOrder.room_height || 0,
             });
-            const descMap: {[key: number]: number} = {};
-            currentOrder.components?.forEach(f => {
-                if(f.component_id) descMap[f.component_id] = f.count || 1;
+            
+            // 2. Заполняем количество компонентов
+            const countMap: {[key: number]: number} = {};
+            
+            // ОТЛАДКА: Посмотрим в консоли, что реально приходит с сервера
+            console.log("Данные с сервера (currentOrder):", currentOrder);
+
+            currentOrder.components?.forEach(c => {
+                if(c.component_id) {
+                    // ВАЖНО: Проверьте в консоли, как называется поле количества.
+                    // Если сервер возвращает null или undefined, сработает || 1
+                    countMap[c.component_id] = c.count || 1; 
+                }
             });
-            setDescriptions(descMap);
+            setCounts(countMap);
         }
-    }, [currentOrder?.id]);
+    // Изменили зависимость: теперь реагируем на любые изменения данных заявки, а не только ID
+    }, [currentOrder]); 
 
     if (operationSuccess) {
         return (
-            <Container className="mt-5 pt-5 text-center">
-                <Card className="p-5 shadow-sm border-0">
-                    <h2 className="text-dark mb-3">Действие выполнено успешно!</h2>
-                    <p className="text-muted">Заявка была сформирована/удалена.</p>
-                    <div className="d-flex justify-content-center gap-3">
-                        <Link to="/factors"><Button variant="outline-danger">К факторам</Button></Link>
-                        <Link to="/orders"><Button variant="danger">К списку заявок</Button></Link>
+            <div className="min-vh-100 bg-black d-flex align-items-center justify-content-center">
+                <Card className="p-4 shadow rounded-4 text-white border-0" style={{ backgroundColor: '#343a40', maxWidth: '450px' }}>
+                    <div className="text-center">
+                        <CheckCircleFill size={40} className="text-success mb-3"/>
+                        <h4 className="mb-2">Успешно!</h4>
+                        <p className="text-light opacity-75 small">Действие выполнено.</p>
+                        <div className="d-flex justify-content-center gap-2 mt-3">
+                            <Link to="/components"><Button variant="outline-light" size="sm">К компонентам</Button></Link>
+                            <Link to="/orders"><Button variant="light" size="sm">К заявкам</Button></Link>
+                        </div>
                     </div>
                 </Card>
-            </Container>
+            </div>
         );
     }
 
-    if (loading || !currentOrder) return <Container className="pt-5"><p>Загрузка...</p></Container>;
+    if (loading || !currentOrder) return (
+        <div className="min-vh-100 bg-black d-flex align-items-center justify-content-center">
+            <Spinner animation="border" variant="light" size="sm" />
+        </div>
+    );
 
     const isDraft = currentOrder.status === STATUS_DRAFT;
     const isCompleted = currentOrder.status === STATUS_COMPLETED;
     const isRejected = currentOrder.status === STATUS_REJECTED;
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.type === 'checkbox' || e.target.type === 'radio' 
-            ? (e.target.id === 'gender-female') 
-            : parseFloat(e.target.value);
-            
+        const val = parseFloat(e.target.value);
         setFormData(prev => ({ ...prev, [e.target.name]: val }));
     };
 
     const handleSaveMain = () => {
         if(currentOrder.id) {
-            console.log("Отправка данных:", formData);
             dispatch(updateOrderFields({ 
                 id: currentOrder.id, 
-                data: { ...formData, gender: formData.gender } 
+                data: formData 
             }))
             .unwrap()
-            .then(() => alert("Основные данные сохранены!"))
-            .catch(() => alert("Ошибка при сохранении"));
+            .then(() => alert("Параметры сохранены"))
+            .catch(() => alert("Ошибка сохранения"));
         }
     };
 
-    const handleSaveOneDescription = (factorId: number) => {
-        if(currentOrder.id && descriptions[factorId] !== undefined) {
+    const handleSaveCount = (componentId: number) => {
+        if(currentOrder.id && counts[componentId] !== undefined) {
             dispatch(updateComponentCount({
                 orderId: currentOrder.id,
-                factorId,
-                desc: descriptions[factorId]
+                componentId: componentId,
+                count: counts[componentId]
             }))
             .unwrap()
-            .then(() => alert("Примечание сохранено"))
-            .catch(() => alert("Ошибка сохранения примечания"));
+            .then(() => alert("Кол-во обновлено"))
+            .catch(() => alert("Ошибка"));
         }
     };
 
     return (
-        <Container className="pt-5 mt-5 pb-5">
-            <Card className="border-0 shadow-sm mb-4">
-                <Card.Body className="text-center py-2">
-                    <h4 className="fw-bold m-0">Составление заявки</h4>
-                </Card.Body>
-            </Card>
-
-            <Row className="mb-4 g-4">
-                {/* Левая колонка: Ввод данных */}
-                <Col md={6}>
-                    <Card className="h-100 border-0 shadow-sm" style={{ backgroundColor: '#f8f9fa' }}>
-                        <Card.Body>
-                            <h5 className="fw-bold mb-3">Введите данные в анкету</h5>
-                            <Form>
-                                {/* Поля формы */}
-                                <Form.Group as={Row} className="mb-2 align-items-center">
-                                    <Form.Label column sm={4}>Возраст</Form.Label>
-                                    <Col sm={8}>
-                                        <Form.Control type="number" name="age" value={formData.age} onChange={handleInputChange} disabled={!isDraft} />
-                                    </Col>
-                                </Form.Group>
-                                <Form.Group as={Row} className="mb-2 align-items-center">
-                                    <Form.Label column sm={4}>Пол</Form.Label>
-                                    <Col sm={8}>
-                                        <Form.Check inline type="radio" label="Мужской" name="gender" id="gender-male" checked={!formData.gender} onChange={() => setFormData(p => ({...p, gender: false}))} disabled={!isDraft} />
-                                        <Form.Check inline type="radio" label="Женский" name="gender" id="gender-female" checked={formData.gender} onChange={() => setFormData(p => ({...p, gender: true}))} disabled={!isDraft} />
-                                    </Col>
-                                </Form.Group>
-                                <Form.Group as={Row} className="mb-2 align-items-center">
-                                    <Form.Label column sm={4}>Вес (кг)</Form.Label>
-                                    <Col sm={8}>
-                                        <Form.Control type="number" name="weight" value={formData.weight} onChange={handleInputChange} disabled={!isDraft} />
-                                    </Col>
-                                </Form.Group>
-                                <Form.Group as={Row} className="mb-2 align-items-center">
-                                    <Form.Label column sm={4}>Рост (см)</Form.Label>
-                                    <Col sm={8}>
-                                        <Form.Control type="number" name="height" value={formData.height} onChange={handleInputChange} disabled={!isDraft} />
-                                    </Col>
-                                </Form.Group>
-                            </Form>
-                        </Card.Body>
-                    </Card>
-                </Col>
-
-                 {/* Правая колонка: Результат */}
-                <Col md={6}>
-                    <Card className="h-100 border-0 shadow-sm" style={{ backgroundColor: '#f8f9fa' }}>
-                        <Card.Body>
-                            <h5 className="fw-bold mb-3">Результат</h5>
-                            {isCompleted && (
-                                <div>
-                                    <div className="mb-3">
-                                        <strong>Остеопоротические переломы</strong>
-                                        <div className="fs-4 text-success">{currentOrder.POF?.toFixed(1)}%</div>
-                                    </div>
-                                    <div>
-                                        <strong>Перелом шейки бедра</strong>
-                                        <div className="fs-4 text-success">{currentOrder.PHF?.toFixed(1)}%</div>
-                                    </div>
-                                </div>
-                            )}
-                            {isRejected && (
-                                <div className="text-center py-4">
-                                    <ExclamationCircle size={48} className="text-danger mb-3" />
-                                    <h5 className="text-danger fw-bold">Заявка отклонена</h5>
-                                    <p className="text-muted">Модератор отклонил заявку. Проверьте корректность данных.</p>
-                                </div>
-                            )}
-                            {!isCompleted && !isRejected && (
-                                <div className="text-muted d-flex align-items-center h-75">
-                                    <i>Результат будет доступен после обработки заявки модератором.</i>
-                                </div>
-                            )}
-                        </Card.Body>
-                    </Card>
-                </Col>
-            </Row>
-
-            {/* Список факторов */}
-            <div className="d-flex flex-column gap-3 mb-5">
-                {currentOrder.factors?.map((f) => (
-                    <Card key={f.factor_id} className="border-0 shadow-sm">
-                        <Card.Body className="p-0">
-                            <Row className="g-0">
-                                <Col md={4} className="d-flex align-items-center p-3 border-end">
-                                    <div className="me-3" style={{ width: 60 }}>
-                                        <Image src={f.image || DefaultImage} fluid rounded />
-                                    </div>
-                                    <div className="flex-grow-1">
-                                        <h6 className="fw-bold mb-2">{f.title}</h6>
-                                        <Link to={`/factors/${f.factor_id}`}>
-                                            <Button size="sm" variant="danger">Подробнее</Button>
-                                        </Link>
-                                    </div>
+        <div className="min-vh-100 bg-black pb-5">
+            <Container className="pt-4 mt-4"> {/* Уменьшил верхний отступ */}
+                
+                {/* Основной контент (Параметры и Статус) - Компактный вид */}
+                <div className="d-flex flex-column flex-md-row gap-3 mb-3">
+                    
+                    {/* Левая панель: Ввод данных */}
+                    <div className="flex-fill" style={{ flexBasis: '50%' }}>
+                        <Card className="h-100 border-0 shadow text-white" style={{ backgroundColor: '#343a40' }}>
+                            <Card.Body className="p-3"> {/* p-3 вместо p-4 */}
+                                <div className="d-flex justify-content-between align-items-center mb-2 border-bottom border-secondary pb-1">
+                                    <h6 className="fw-bold m-0 text-light">Параметры помещения</h6>
                                     {isDraft && (
                                         <Button 
-                                            variant="link" className="text-muted p-0 ms-2"
-                                            title="Удалить из заявки"
-                                            onClick={() => dispatch(removeComponentFromOrder({ orderId: currentOrder.id!, factorId: f.factor_id! }))}
+                                            variant="link" 
+                                            size="sm" 
+                                            onClick={handleSaveMain} 
+                                            className="text-info p-0 text-decoration-none"
                                         >
-                                            <Trash size={20} />
+                                            <Floppy size={14} className="me-1"/> Сохранить
                                         </Button>
                                     )}
-                                </Col>
+                                </div>
+                                <Form>
+                                    <div className="d-flex gap-3">
+                                        <Form.Group className="flex-fill">
+                                            <Form.Label className="text-light opacity-75 small mb-1">Площадь (м²)</Form.Label>
+                                            <Form.Control 
+                                                size="sm"
+                                                type="number" 
+                                                name="room_area" 
+                                                value={formData.room_area} 
+                                                onChange={handleInputChange} 
+                                                disabled={!isDraft}
+                                                className="bg-dark text-white border-secondary"
+                                            />
+                                        </Form.Group>
+                                        <Form.Group className="flex-fill">
+                                            <Form.Label className="text-light opacity-75 small mb-1">Высота (м)</Form.Label>
+                                            <Form.Control 
+                                                size="sm"
+                                                type="number" 
+                                                name="room_height" 
+                                                value={formData.room_height} 
+                                                onChange={handleInputChange} 
+                                                disabled={!isDraft}
+                                                className="bg-dark text-white border-secondary"
+                                            />
+                                        </Form.Group>
+                                    </div>
+                                </Form>
+                            </Card.Body>
+                        </Card>
+                    </div>
 
-                                <Col md={8} className="p-3 bg-light d-flex flex-column">
-                                    <Form.Control
-                                        as="textarea"
-                                        rows={2}
-                                        placeholder="Дополнительная информация (например: стаж курения)..."
-                                        value={descriptions[f.factor_id!] || ''}
-                                        onChange={(e) => setDescriptions(prev => ({ ...prev, [f.factor_id!]: e.target.value }))}
-                                        disabled={!isDraft}
-                                        className="border-0 bg-white mb-2"
-                                        style={{ resize: 'none' }}
-                                    />
+                    {/* Правая панель: Статус */}
+                    <div className="flex-fill" style={{ flexBasis: '50%' }}>
+                        <Card className="h-100 border-0 shadow text-white" style={{ backgroundColor: '#343a40' }}>
+                            <Card.Body className="p-3 d-flex flex-column justify-content-center align-items-center text-center">
+                                {isCompleted ? (
+                                    <>
+                                        <CheckCircleFill size={24} className="text-success mb-2"/>
+                                        <h6 className="text-success fw-bold m-0">Заявка выполнена</h6>
+                                    </>
+                                ) : isRejected ? (
+                                    <>
+                                        <ExclamationCircle size={24} className="text-danger mb-2" />
+                                        <h6 className="text-danger fw-bold m-0">Отклонена</h6>
+                                    </>
+                                ) : (
+                                    <span className="text-light opacity-50 small">
+                                        Статус: {isDraft ? 'Черновик' : 'В обработке'}
+                                    </span>
+                                )}
+                            </Card.Body>
+                        </Card>
+                    </div>
+                </div>
+
+                {/* ПАНЕЛЬ ДЕЙСТВИЙ (Перемещена СЮДА, выше компонентов) */}
+                {isDraft && (
+                    <div className="d-flex justify-content-between align-items-center bg-dark p-2 px-3 rounded-3 border border-secondary mb-3">
+                        <Button 
+                            variant="outline-danger" 
+                            size="sm"
+                            onClick={() => {
+                                if(window.confirm('Удалить эту заявку?')) dispatch(deleteOrder(currentOrder.id!));
+                            }}
+                        >
+                            <Trash size={14} className="me-1"/> Удалить
+                        </Button>
+
+                        <Button 
+                            variant="light" 
+                            size="sm" 
+                            className="fw-bold px-3"
+                            onClick={() => dispatch(submitOrder(currentOrder.id!))}
+                            disabled={!currentOrder.components?.length}
+                        >
+                            Сформировать <CheckCircleFill className="ms-1" size={14}/>
+                        </Button>
+                    </div>
+                )}
+
+                {/* Список компонентов (Компактный) */}
+                <h6 className="text-white mb-2 ps-1 small">Компоненты ({currentOrder.components?.length || 0})</h6>
+                <div className="d-flex flex-column gap-2 mb-4"> {/* gap-2 вместо gap-3 */}
+                    {currentOrder.components?.map((c) => (
+                        <Card key={c.component_id} className="border-0 shadow text-white" style={{ backgroundColor: '#343a40' }}>
+                            <Card.Body className="p-2"> {/* p-2 очень компактно */}
+                                <div className="d-flex align-items-center">
                                     
-                                    {/* Кнопка сохранения примечания */}
-                                    {isDraft && (
-                                        <div className="text-end">
-                                            <Button 
-                                                size="sm" 
-                                                variant="outline-success" 
-                                                onClick={() => handleSaveOneDescription(f.factor_id!)}
-                                                className="d-inline-flex align-items-center gap-2"
-                                            >
-                                                <Floppy size={14}/> Сохранить
-                                            </Button>
-                                        </div>
-                                    )}
-                                </Col>
-                            </Row>
-                        </Card.Body>
-                    </Card>
-                ))}
-            </div>
+                                    {/* Картинка */}
+                                    <div className="me-3" style={{ width: 50, height: 50 }}> {/* 50x50px */}
+                                        <Image 
+                                            key={c.image_url} 
+                                            src={c.image_url || DefaultImage} 
+                                            fluid 
+                                            rounded 
+                                            referrerPolicy="no-referrer"
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                        />
+                                    </div>
+                                    
+                                    {/* Название */}
+                                    <div className="flex-grow-1">
+                                        <h6 className="fw-bold mb-0 text-white small">{c.title}</h6>
+                                        <Link to={`/components/${c.component_id}`} className="text-decoration-none text-info" style={{ fontSize: '0.75rem' }}>
+                                            Подробнее
+                                        </Link>
+                                    </div>
 
-            {/* Кнопки управления */}
-            {isDraft && (
-                <Row>
-                    <Col className="d-flex gap-2">
-                        <Button variant="outline-success" onClick={handleSaveMain}>
-                            <Floppy className="me-2"/>
-                            Сохранить анкету
-                        </Button>
-                        <Button variant="outline-danger" onClick={() => {
-                            if(window.confirm('Удалить заявку?')) dispatch(deleteOrder(currentOrder.id!));
-                        }}>Удалить заявку</Button>
-                    </Col>
-                    <Col className="text-end">
-                         <Button variant="success" size="lg" onClick={() => dispatch(submitOrder(currentOrder.id!))}>
-                            Сформировать <CheckCircleFill className="ms-2"/>
-                        </Button>
-                    </Col>
-                </Row>
-            )}
-        </Container>
+                                    {/* Управление количеством */}
+                                    <div className="d-flex align-items-center gap-2">
+                                        <div className="d-flex align-items-center bg-dark rounded border border-secondary px-2 py-1" style={{ height: '32px' }}>
+                                            <span className="text-secondary small me-2" style={{ fontSize: '0.7rem' }}>Кол-во:</span>
+                                            <input
+                                                type="number"
+                                                min="1"
+                                                value={counts[c.component_id!] || 1}
+                                                onChange={(e) => setCounts(prev => ({ ...prev, [c.component_id!]: parseInt(e.target.value) || 1 }))}
+                                                disabled={!isDraft}
+                                                className="bg-transparent border-0 text-white text-center p-0"
+                                                style={{ width: '30px', outline: 'none', fontSize: '0.9rem' }}
+                                            />
+                                        </div>
+
+                                        {isDraft && (
+                                            <>
+                                                <Button 
+                                                    size="sm" 
+                                                    variant="outline-success" 
+                                                    className="p-1 d-flex align-items-center justify-content-center"
+                                                    style={{ width: '30px', height: '30px' }}
+                                                    onClick={() => handleSaveCount(c.component_id!)}
+                                                    title="Сохранить"
+                                                >
+                                                    <Floppy size={14} />
+                                                </Button>
+                                                <Button 
+                                                    size="sm"
+                                                    variant="outline-danger" 
+                                                    className="p-1 d-flex align-items-center justify-content-center"
+                                                    style={{ width: '30px', height: '30px' }}
+                                                    onClick={() => dispatch(removeComponentFromOrder({ orderId: currentOrder.id!, componentId: c.component_id! }))}
+                                                    title="Удалить"
+                                                >
+                                                    <Trash size={14} />
+                                                </Button>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    ))}
+                    
+                    {(!currentOrder.components || currentOrder.components.length === 0) && (
+                        <div className="text-center text-secondary small py-3 border border-secondary rounded border-dashed">
+                            Список пуст
+                        </div>
+                    )}
+                </div>
+            </Container>
+        </div>
     );
 };

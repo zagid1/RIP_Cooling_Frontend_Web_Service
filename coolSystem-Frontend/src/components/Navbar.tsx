@@ -50,7 +50,7 @@ export const AppNavbar = () => {
 
                         {isAuthenticated ? (
                             <>
-                                <Nav.Link eventKey="cooling" as={Link} to="/cooling" className="nav-link text-white">
+                                <Nav.Link as={Link} to="/orders" className="nav-link text-white">
                                     Мои заявки
                                 </Nav.Link>
 

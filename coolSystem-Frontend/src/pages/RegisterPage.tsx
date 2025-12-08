@@ -7,8 +7,6 @@ import { PersonPlus } from 'react-bootstrap-icons';
 import type { AppDispatch, RootState } from '../store';
 import './styles/main.css';
 
-
-
 export const RegisterPage = () => {
     const [formData, setFormData] = useState({ full_name: '', username: '', password: '' });
     const dispatch = useDispatch<AppDispatch>();
@@ -33,16 +31,18 @@ export const RegisterPage = () => {
     };
 
     return (
-        <div className="d-flex align-items-center justify-content-center min-vh-100 background-color-register">
+        // Изменен фон на черный (bg-black)
+        <div className="d-flex align-items-center justify-content-center min-vh-100 bg-black">
             <Container style={{ maxWidth: '450px' }}>
-                <Card className="shadow border-0 rounded-4">
+                {/* Карточка теперь темная (bg-dark) с белым текстом и серой границей */}
+                <Card className="shadow rounded-4 bg-dark text-white border border-secondary">
                     <Card.Body className="p-5">
                         <div className="text-center mb-4">
-                            <h2 className="fw-bold" style={{ color: '#495057' }}>Регистрация</h2>
-                            <p className="text-muted">Создайте новый аккаунт</p>
+                            <h2 className="fw-bold text-white">Регистрация</h2>
+                            <p className="text-secondary">Создайте новый аккаунт</p>
                         </div>
 
-                        {error && <Alert variant="danger">{error}</Alert>}
+                        {error && <Alert variant="secondary" className="bg-secondary text-white border-0">{error}</Alert>}
 
                         <Form onSubmit={handleSubmit}>
                             <Form.Floating className="mb-3">
@@ -53,8 +53,10 @@ export const RegisterPage = () => {
                                     value={formData.full_name}
                                     onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                                     required
+                                    // Стили для темного инпута
+                                    className="bg-dark text-white border-secondary"
                                 />
-                                <label htmlFor="fullName" style={{ color: '#495057' }}>ФИО</label>
+                                <label htmlFor="fullName" className="text-secondary">ФИО</label>
                             </Form.Floating>
 
                             <Form.Floating className="mb-3">
@@ -65,8 +67,9 @@ export const RegisterPage = () => {
                                     value={formData.username}
                                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                                     required
+                                    className="bg-dark text-white border-secondary"
                                 />
-                                <label htmlFor="username" style={{ color: '#495057' }}>Логин</label>
+                                <label htmlFor="username" className="text-secondary">Логин</label>
                             </Form.Floating>
 
                             <Form.Floating className="mb-4">
@@ -77,12 +80,13 @@ export const RegisterPage = () => {
                                     value={formData.password}
                                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                     required
+                                    className="bg-dark text-white border-secondary"
                                 />
-                                <label htmlFor="password" style={{ color: '#495057' }}>Пароль</label>
+                                <label htmlFor="password" className="text-secondary">Пароль</label>
                             </Form.Floating>
 
                             <Button 
-                                variant="danger" 
+                                variant="light" // Кнопка теперь светлая/серая
                                 type="submit" 
                                 className="w-100 py-3 fw-bold rounded-3 d-flex align-items-center justify-content-center gap-2"
                                 disabled={loading}
@@ -92,8 +96,9 @@ export const RegisterPage = () => {
                         </Form>
 
                         <div className="text-center mt-4">
-                            <span className="text-muted">Уже есть аккаунт? </span>
-                            <Link to="/login" className="text-danger fw-bold text-decoration-none">
+                            <span className="text-secondary">Уже есть аккаунт? </span>
+                            {/* Ссылка теперь белая */}
+                            <Link to="/login" className="text-white fw-bold text-decoration-none">
                                 Войти
                             </Link>
                         </div>

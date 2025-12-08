@@ -85,13 +85,25 @@
     right: -3px;
     background: #ff4d4d;
     color: white;
+    
+    /* Шрифт */
     font-size: 10px;
-    width: 16px;
-    height: 16px;
+    font-weight: 700; /* Делаем жирным для лучшей читаемости */
+    font-family: Arial, sans-serif; /* Простой шрифт лучше центрируется */
+    
+    /* Размеры */
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
+    
+    /* Центрирование */
     display: flex;
     align-items: center;
     justify-content: center;
+    
+    /* Тонкая настройка */
+    padding: 0;      /* Сброс возможных отступов */
+    padding-top: 1px; /* Визуальная компенсация (иногда цифры "висят" слишком высоко) */
     line-height: 1;
 }
 

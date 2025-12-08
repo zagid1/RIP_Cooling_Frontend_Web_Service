@@ -7,10 +7,6 @@ export const HomePage = () => {
             <AppNavbar />
 
             <div className="home-page-container">
-                {/* <video autoPlay loop muted playsInline className="home-video-background">
-                    <source src="/Background.mp4" type="video/mp4" />
-                    Ваш браузер не поддерживает видео-тег.
-                </video> */}
 
                 <div className="home-page-content">
                     <h1>Добро пожаловать в CoolingSystems!</h1>

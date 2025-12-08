@@ -31,16 +31,18 @@ export const LoginPage = () => {
     };
 
     return (
-        <div className="d-flex align-items-center justify-content-center min-vh-100 background-color-login">
+        // Изменен фон на черный (bg-black)
+        <div className="d-flex align-items-center justify-content-center min-vh-100 bg-black">
             <Container style={{ maxWidth: '400px' }}>
-                <Card className="shadow border-0 rounded-4">
+                {/* Карточка теперь темная (bg-dark) с белым текстом и серой границей */}
+                <Card className="shadow rounded-4 bg-dark text-white border border-secondary">
                     <Card.Body className="p-5">
                         <div className="text-center mb-4">
-                            <h2 className="fw-bold" style={{ color: '#495057' }}>Вход</h2>
-                            <p className="text-muted">Пользователь в системе CoolingSystem</p>
+                            <h2 className="fw-bold text-white">Вход</h2>
+                            <p className="text-secondary">Пользователь в системе CoolingSystem</p>
                         </div>
 
-                        {error && <Alert variant="danger" className="text-center">{error}</Alert>}
+                        {error && <Alert variant="secondary" className="text-center bg-secondary text-white border-0">{error}</Alert>}
 
                         <Form onSubmit={handleSubmit}>
                             <Form.Floating className="mb-3">
@@ -51,8 +53,10 @@ export const LoginPage = () => {
                                     value={formData.username}
                                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                                     required
+                                    // Стили для темного инпута
+                                    className="bg-dark text-white border-secondary"
                                 />
-                                <label htmlFor="username" style={{ color: '#495057' }}>Логин</label>
+                                <label htmlFor="username" className="text-secondary">Логин</label>
                             </Form.Floating>
 
                             <Form.Floating className="mb-4">
@@ -63,12 +67,13 @@ export const LoginPage = () => {
                                     value={formData.password}
                                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                     required
+                                    className="bg-dark text-white border-secondary"
                                 />
-                                <label htmlFor="password" style={{ color: '#495057' }}>Пароль</label>
+                                <label htmlFor="password" className="text-secondary">Пароль</label>
                             </Form.Floating>
 
                             <Button 
-                                variant="danger" 
+                                variant="light" // Кнопка теперь светлая/серая
                                 type="submit" 
                                 className="w-100 py-3 fw-bold rounded-3 d-flex align-items-center justify-content-center gap-2"
                                 disabled={loading}
@@ -78,8 +83,9 @@ export const LoginPage = () => {
                         </Form>
 
                         <div className="text-center mt-4">
-                            <span className="text-muted">Нет аккаунта? </span>
-                            <Link to="/register" className="text-danger fw-bold text-decoration-none">
+                            <span className="text-secondary">Нет аккаунта? </span>
+                            {/* Ссылка теперь белая */}
+                            <Link to="/register" className="text-white fw-bold text-decoration-none">
                                 Зарегистрироваться
                             </Link>
                         </div>
