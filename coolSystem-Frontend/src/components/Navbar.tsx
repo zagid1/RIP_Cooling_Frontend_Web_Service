@@ -51,7 +51,7 @@ export const AppNavbar = () => {
                         {isAuthenticated ? (
                             <>
                                 <Nav.Link as={Link} to="/orders" className="nav-link text-white">
-                                    Мои заявки
+                                    Заявки
                                 </Nav.Link>
 
                                 {/* d-none d-lg-flex: Скрыто на мобильных, Flex на больших экранах */}

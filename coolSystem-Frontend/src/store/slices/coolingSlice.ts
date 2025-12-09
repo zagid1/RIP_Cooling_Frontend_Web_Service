@@ -145,6 +145,20 @@ export const deleteOrder = createAsyncThunk(
     }
 );
 
+// --- 8. НОВОЕ: Резолв заявки (Принять/Отклонить) ---
+export const resolveOrder = createAsyncThunk(
+    'frax/resolve',
+    async ({ id, action }: { id: number; action: 'complete' | 'reject' }, { rejectWithValue }) => {
+        try {
+            await api.cooling.resolveUpdate(id, { action });
+            return { id, action };
+        } catch (err: any) {
+            return rejectWithValue('Не удалось обновить статус заявки');
+        }
+    }
+);
+
+
 const coolingSlice = createSlice({
     name: 'cooling',
     initialState,
@@ -159,13 +173,17 @@ const coolingSlice = createSlice({
     extraReducers: (builder) => {
         builder
             // Список
-            .addCase(fetchOrdersList.pending, (state) => { state.loading = true; })
+            .addCase(fetchOrdersList.pending, (state) => { 
+                if (state.list.length === 0) {
+                    state.loading = true; 
+                } 
+            })
             .addCase(fetchOrdersList.fulfilled, (state, action) => {
                 state.loading = false;
                 state.list = action.payload || []; 
 })
             // Детали
-            .addCase(fetchOrderById.pending, (state) => { state.loading = true; state.currentOrder = null; })
+            .addCase(fetchOrderById.pending, (state) => { state.loading = true; /*state.currentOrder = null; */})
             .addCase(fetchOrderById.fulfilled, (state, action) => {
                 state.loading = false;
                 state.currentOrder = action.payload;
@@ -193,6 +211,15 @@ const coolingSlice = createSlice({
             .addCase(submitOrder.fulfilled, (state) => { state.operationSuccess = true; })
             .addCase(deleteOrder.fulfilled, (state) => { state.operationSuccess = true; })
             // Сброс
+            // --- Обработка решения модератора ---
+            .addCase(resolveOrder.fulfilled, (state, action) => {
+                state.operationSuccess = true;
+                // Оптимистичное обновление статуса в текущем просмотре
+                if (state.currentOrder && state.currentOrder.id === action.payload.id) {
+                    // 4 = Completed, 5 = Rejected
+                    state.currentOrder.status = action.payload.action === 'complete' ? 4 : 5;
+                }
+            })
             .addCase(logoutUser.fulfilled, () => initialState);
     }
 });
