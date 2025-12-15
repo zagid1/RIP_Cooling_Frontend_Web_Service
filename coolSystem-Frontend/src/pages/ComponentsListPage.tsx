@@ -45,7 +45,7 @@ export const ComponentsListPage = () => {
     const handleCartClick = (e: React.MouseEvent) => {
         e.preventDefault();
         if (cartState.cooling_id) {
-            navigate(`/orders/${cartState.cooling_id}`);
+            navigate(`/cooling/${cartState.cooling_id}`);
         }
     };
 

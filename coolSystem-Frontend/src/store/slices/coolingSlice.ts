@@ -7,7 +7,7 @@ import type { DsCoolingDTO, DsCoolingUpdateRequest, DsComponentToCoolingUpdateRe
 
 interface CoolingState {
     list: DsCoolingDTO[];           
-    currentOrder: DsCoolingDTO | null; 
+    currentCooling: DsCoolingDTO | null; 
     loading: boolean;
     error: string | null;
     operationSuccess: boolean;  
@@ -15,14 +15,14 @@ interface CoolingState {
 
 const initialState: CoolingState = {
     list: [],
-    currentOrder: null,
+    currentCooling: null,
     loading: false,
     error: null,
     operationSuccess: false,
 };
 
 // --- 1. Получение списка заявок (с фильтрами) ---
-export const fetchOrdersList = createAsyncThunk(
+export const fetchCoolingList = createAsyncThunk(
     'cooling/fetchList',
     async (filters: { status?: string; from?: string; to?: string }, { rejectWithValue }) => {
         try {
@@ -39,7 +39,7 @@ export const fetchOrdersList = createAsyncThunk(
 );
 
 // --- 2. Получение одной заявки по ID ---
-export const fetchOrderById = createAsyncThunk(
+export const fetchCoolingById = createAsyncThunk(
     'cooling/fetchById',
     async (id: string, { rejectWithValue }) => {
         try {
@@ -57,7 +57,7 @@ export const fetchOrderById = createAsyncThunk(
                 count: f.Count ?? f.count  ?? 1 
             }));
 
-            const mappedOrder: DsCoolingDTO = {
+            const mappedCooling: DsCoolingDTO = {
                 id: data.ID ?? data.id,
                 status: data.Status ?? data.status ?? 1, 
                 room_area: data.room_area ?? 0,
@@ -66,8 +66,8 @@ export const fetchOrderById = createAsyncThunk(
                 components: mappedComponents
             };
             
-            console.log('Загруженная заявка (после маппинга):', mappedOrder); 
-            return mappedOrder;
+            console.log('Загруженная заявка (после маппинга):', mappedCooling); 
+            return mappedCooling;
         } catch (err: any) {
             return rejectWithValue('Заявка не найдена');
         }
@@ -75,7 +75,7 @@ export const fetchOrderById = createAsyncThunk(
 );
 
 // --- 3. Сохранение (Обновление полей: вес, рост и т.д.) ---
-export const updateOrderFields = createAsyncThunk(
+export const updateCoolingFields = createAsyncThunk(
     'cooling/updateFields',
     async ({ id, data }: { id: number; data: DsCoolingUpdateRequest }, { rejectWithValue }) => {
         try {
@@ -95,10 +95,10 @@ export const updateOrderFields = createAsyncThunk(
 // --- 4. Обновление описания фактора (М-М связь) ---
 export const updateComponentCount = createAsyncThunk(
     'cooling/updateComponentNum',
-    async ({ orderId, componentId, count }: { orderId: number; componentId: number; count: number }, { rejectWithValue }) => {
+    async ({ coolingId, componentId, count }: { coolingId: number; componentId: number; count: number }, { rejectWithValue }) => {
         try {
             const data: DsComponentToCoolingUpdateRequest = { count: count };
-            await api.cooling.componentsUpdate(orderId, componentId, data);
+            await api.cooling.componentsUpdate(coolingId, componentId, data);
             return { componentId, count };
         } catch (err) {
             return rejectWithValue('Не удалось обновить количество');
@@ -107,11 +107,11 @@ export const updateComponentCount = createAsyncThunk(
 );
 
 // --- 5. Удаление фактора из заявки ---
-export const removeComponentFromOrder = createAsyncThunk(
+export const removeComponentFromCooling = createAsyncThunk(
     'cooling/removeComponent',
-    async ({ orderId, componentId }: { orderId: number; componentId: number }, { rejectWithValue }) => {
+    async ({ coolingId, componentId }: { coolingId: number; componentId: number }, { rejectWithValue }) => {
         try {
-            await api.cooling.componentsDelete(orderId, componentId);
+            await api.cooling.componentsDelete(coolingId, componentId);
             return componentId;
         } catch (err) {
             return rejectWithValue('Ошибка удаления компонента');
@@ -120,7 +120,7 @@ export const removeComponentFromOrder = createAsyncThunk(
 );
 
 // --- 6. Сформировать заявку (Отправить) ---
-export const submitOrder = createAsyncThunk(
+export const submitCooling = createAsyncThunk(
     'cooling/submit',
     async (id: number, { rejectWithValue }) => {
         try {
@@ -133,7 +133,7 @@ export const submitOrder = createAsyncThunk(
 );
 
 // --- 7. Удалить заявку ---
-export const deleteOrder = createAsyncThunk(
+export const deleteCooling = createAsyncThunk(
     'cooling/delete',
     async (id: number, { rejectWithValue }) => {
         try {
@@ -146,7 +146,7 @@ export const deleteOrder = createAsyncThunk(
 );
 
 // --- 8. НОВОЕ: Резолв заявки (Принять/Отклонить) ---
-export const resolveOrder = createAsyncThunk(
+export const resolveCooling = createAsyncThunk(
     'frax/resolve',
     async ({ id, action }: { id: number; action: 'complete' | 'reject' }, { rejectWithValue }) => {
         try {
@@ -166,63 +166,63 @@ const coolingSlice = createSlice({
         resetOperationSuccess: (state) => {
             state.operationSuccess = false;
         },
-        clearCurrentOrder: (state) => {
-            state.currentOrder = null;
+        clearCurrentCooling: (state) => {
+            state.currentCooling = null;
         }
     },
     extraReducers: (builder) => {
         builder
             // Список
-            .addCase(fetchOrdersList.pending, (state) => { 
+            .addCase(fetchCoolingsList.pending, (state) => { 
                 if (state.list.length === 0) {
                     state.loading = true; 
                 } 
             })
-            .addCase(fetchOrdersList.fulfilled, (state, action) => {
+            .addCase(fetchCoolingsList.fulfilled, (state, action) => {
                 state.loading = false;
                 state.list = action.payload || []; 
 })
             // Детали
-            .addCase(fetchOrderById.pending, (state) => { state.loading = true; /*state.currentOrder = null; */})
-            .addCase(fetchOrderById.fulfilled, (state, action) => {
+            .addCase(fetchCoolingById.pending, (state) => { state.loading = true; /*state.currentCooling = null; */})
+            .addCase(fetchCoolingById.fulfilled, (state, action) => {
                 state.loading = false;
-                state.currentOrder = action.payload;
+                state.currentCooling = action.payload;
             })
             // Обновление полей (локально обновляем стейт)
-            .addCase(updateOrderFields.fulfilled, (state, action) => {
-                if (state.currentOrder) {
-                    state.currentOrder = { ...state.currentOrder, ...action.payload };
+            .addCase(updateCoolingFields.fulfilled, (state, action) => {
+                if (state.currentCooling) {
+                    state.currentCooling = { ...state.currentCooling, ...action.payload };
                 }
             })
             // Обновление количества компонента в заявке
             .addCase(updateComponentCount.fulfilled, (state, action) => {
-                if (state.currentOrder && state.currentOrder.components) {
-                    const cooling = state.currentOrder.components.find(f => f.component_id === action.payload.componentId);
+                if (state.currentCooling && state.currentCooling.components) {
+                    const cooling = state.currentCooling.components.find(f => f.component_id === action.payload.componentId);
                     if (cooling) cooling.count = action.payload.count;
                 }
             })
             // Удаление компонента
-            .addCase(removeComponentFromOrder.fulfilled, (state, action) => {
-                if (state.currentOrder && state.currentOrder.components) {
-                    state.currentOrder.components = state.currentOrder.components.filter(f => f.component_id !== action.payload);
+            .addCase(removeComponentFromCooling.fulfilled, (state, action) => {
+                if (state.currentCooling && state.currentCooling.components) {
+                    state.currentCooling.components = state.currentCooling.components.filter(f => f.component_id !== action.payload);
                 }
             })
             // Сформировать / Удалить (успех)
-            .addCase(submitOrder.fulfilled, (state) => { state.operationSuccess = true; })
-            .addCase(deleteOrder.fulfilled, (state) => { state.operationSuccess = true; })
+            .addCase(submitCooling.fulfilled, (state) => { state.operationSuccess = true; })
+            .addCase(deleteCooling.fulfilled, (state) => { state.operationSuccess = true; })
             // Сброс
             // --- Обработка решения модератора ---
-            .addCase(resolveOrder.fulfilled, (state, action) => {
+            .addCase(resolveCooling.fulfilled, (state, action) => {
                 state.operationSuccess = true;
                 // Оптимистичное обновление статуса в текущем просмотре
-                if (state.currentOrder && state.currentOrder.id === action.payload.id) {
+                if (state.currentCooling && state.currentCooling.id === action.payload.id) {
                     // 4 = Completed, 5 = Rejected
-                    state.currentOrder.status = action.payload.action === 'complete' ? 4 : 5;
+                    state.currentCooling.status = action.payload.action === 'complete' ? 4 : 5;
                 }
             })
             .addCase(logoutUser.fulfilled, () => initialState);
     }
 });
 
-export const { resetOperationSuccess, clearCurrentOrder } = coolingSlice.actions;
+export const { resetOperationSuccess, clearCurrentCooling } = coolingSlice.actions;
 export default coolingSlice.reducer;

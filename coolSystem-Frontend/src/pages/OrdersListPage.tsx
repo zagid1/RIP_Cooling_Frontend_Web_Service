@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Container, Table, Form, Badge, Spinner, Card, ListGroup, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { fetchOrdersList } from '../store/slices/coolingSlice';
+import { fetchCoolingList } from '../store/slices/coolingSlice';
 import { PersonFill, ExclamationCircleFill, Funnel } from 'react-bootstrap-icons';
 import type { AppDispatch, RootState } from '../store';
 
@@ -35,7 +35,7 @@ export const OrdersListPage = () => {
 
     // --- SHORT POLLING (Автообновление каждые 5 сек) ---
     useEffect(() => {
-        const loadData = () => dispatch(fetchOrdersList(filters));
+        const loadData = () => dispatch(fetchCoolingList(filters));
         loadData();
         const intervalId = setInterval(loadData, 5000);
         return () => clearInterval(intervalId);
@@ -76,7 +76,7 @@ export const OrdersListPage = () => {
     }, [list, user?.moderator, selectedCreatorId]);
 
     const handleRowClick = (id: number | undefined) => {
-        if (id) navigate(`/orders/${id}`);
+        if (id) navigate(`/cooling/${id}`);
     };
 
     const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -181,7 +181,7 @@ export const OrdersListPage = () => {
                                             <Button 
                                                 variant="outline-light" 
                                                 size="sm" 
-                                                onClick={() => dispatch(fetchOrdersList(filters))}
+                                                onClick={() => dispatch(fetchCoolingList(filters))}
                                                 className="d-flex align-items-center gap-2"
                                             >
                                                 Обновить <Funnel />

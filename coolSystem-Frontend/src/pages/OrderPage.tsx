@@ -3,15 +3,15 @@ import { Container, Card, Form, Button, Image, Spinner } from 'react-bootstrap';
 import { useParams, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { 
-    fetchOrderById, 
-    updateOrderFields, 
+    fetchCoolingById, 
+    updateCoolingFields, 
     updateComponentCount, 
-    removeComponentFromOrder,
-    submitOrder,
-    deleteOrder,
-    resolveOrder, 
+    removeComponentFromCooling,
+    submitCooling,
+    deleteCooling,
+    resolveCooling, 
     resetOperationSuccess,
-    clearCurrentOrder
+    clearCurrentCooling
 } from '../store/slices/coolingSlice';
 import { Trash, CheckCircleFill, ExclamationCircle, Floppy, XCircleFill, CheckLg, CpuFill } from 'react-bootstrap-icons';
 import type { AppDispatch, RootState } from '../store';
@@ -23,11 +23,11 @@ const STATUS_FORMED = 3;
 const STATUS_COMPLETED = 4;
 const STATUS_REJECTED = 5;
 
-export const OrderPage = () => {
+export const CoolingPage = () => {
     const { id } = useParams<{ id: string }>();
     const dispatch = useDispatch<AppDispatch>();
     
-    const { currentOrder, loading, operationSuccess } = useSelector((state: RootState) => state.cooling);
+    const { currentCooling, loading, operationSuccess } = useSelector((state: RootState) => state.cooling);
     const { user } = useSelector((state: RootState) => state.user);
     
     const [formData, setFormData] = useState({ room_height: 0, room_area: 0 });
@@ -37,10 +37,10 @@ export const OrderPage = () => {
     // Срабатывает только при монтировании компонента (или смене ID)
     useEffect(() => {
         if (id) {
-            dispatch(fetchOrderById(id));
+            dispatch(fetchCoolingById(id));
         }
         return () => { 
-            dispatch(clearCurrentOrder()); 
+            dispatch(clearCurrentCooling()); 
             dispatch(resetOperationSuccess()); 
         }
     }, [id, dispatch]);
@@ -49,39 +49,39 @@ export const OrderPage = () => {
     useEffect(() => {
         let intervalId: ReturnType<typeof setInterval>; 
 
-        const isWaitingForResult = currentOrder && 
-                                   currentOrder.status === STATUS_COMPLETED && 
-                                   (!currentOrder.cooling_power || currentOrder.cooling_power <= 0);
+        const isWaitingForResult = currentCooling && 
+                                   currentCooling.status === STATUS_COMPLETED && 
+                                   (!currentCooling.cooling_power || currentCooling.cooling_power <= 0);
 
         if (id && isWaitingForResult) {
             intervalId = setInterval(() => {
                 // "Тихое" обновление данных
-                dispatch(fetchOrderById(id));
+                dispatch(fetchCoolingById(id));
             }, 4000); 
         }
 
         return () => {
             if (intervalId) clearInterval(intervalId);
         }
-    }, [id, currentOrder, dispatch]);
+    }, [id, currentCooling, dispatch]);
 
     // --- 3. СИНХРОНИЗАЦИЯ ЛОКАЛЬНОГО STATE ---
     useEffect(() => {
-        if (currentOrder) {
+        if (currentCooling) {
             setFormData({
-                room_area: currentOrder.room_area || 0,
-                room_height: currentOrder.room_height || 0,
+                room_area: currentCooling.room_area || 0,
+                room_height: currentCooling.room_height || 0,
             });
             
             const countMap: {[key: number]: number} = {};
-            currentOrder.components?.forEach(c => {
+            currentCooling.components?.forEach(c => {
                 if(c.component_id) {
                     countMap[c.component_id] = c.count || 1; 
                 }
             });
             setCounts(countMap);
         }
-    }, [currentOrder]); 
+    }, [currentCooling]); 
 
     // Обработка успешного действия (удаление/смена статуса)
     if (operationSuccess) {
@@ -94,7 +94,7 @@ export const OrderPage = () => {
                         <p className="text-light opacity-75 small">Действие выполнено.</p>
                         <div className="d-flex justify-content-center gap-2 mt-3">
                             <Link to="/components"><Button variant="outline-light" size="sm">К компонентам</Button></Link>
-                            <Link to="/orders"><Button variant="light" size="sm">К заявкам</Button></Link>
+                            <Link to="/cooling"><Button variant="light" size="sm">К заявкам</Button></Link>
                         </div>
                     </div>
                 </Card>
@@ -105,7 +105,7 @@ export const OrderPage = () => {
     // --- АНТИ-ФЛИКЕР (Главное отличие) ---
     // Показываем спиннер ТОЛЬКО если идет загрузка И данных нет совсем.
     // Если данные есть, а мы просто обновляем их в фоне (Polling), спиннер не показываем.
-    if (loading && !currentOrder) {
+    if (loading && !currentCooling) {
         return (
             <div className="min-vh-100 bg-black d-flex align-items-center justify-content-center">
                 <Spinner animation="border" variant="light" size="sm" />
@@ -114,16 +114,16 @@ export const OrderPage = () => {
     }
 
     // Если загрузка закончилась, но данных нет (ошибка или удалено)
-    if (!currentOrder) return null;
+    if (!currentCooling) return null;
 
     // --- ЛОГИКА ОТОБРАЖЕНИЯ ---
-    const isDraft = currentOrder.status === STATUS_DRAFT;
-    const isFormed = currentOrder.status === STATUS_FORMED;
-    const isCompleted = currentOrder.status === STATUS_COMPLETED;
-    const isRejected = currentOrder.status === STATUS_REJECTED;
+    const isDraft = currentCooling.status === STATUS_DRAFT;
+    const isFormed = currentCooling.status === STATUS_FORMED;
+    const isCompleted = currentCooling.status === STATUS_COMPLETED;
+    const isRejected = currentCooling.status === STATUS_REJECTED;
     
     // Специальный флаг: Статус ОК, но результата еще нет
-    const isCalculating = isCompleted && (!currentOrder.cooling_power || currentOrder.cooling_power <= 0);
+    const isCalculating = isCompleted && (!currentCooling.cooling_power || currentCooling.cooling_power <= 0);
 
     const isModerator = user?.moderator;
 
@@ -133,9 +133,9 @@ export const OrderPage = () => {
     };
 
     const handleSaveMain = () => {
-        if(currentOrder.id) {
-            dispatch(updateOrderFields({ 
-                id: currentOrder.id, 
+        if(currentCooling.id) {
+            dispatch(updateCoolingFields({ 
+                id: currentCooling.id, 
                 data: formData 
             }))
             .unwrap()
@@ -145,9 +145,9 @@ export const OrderPage = () => {
     };
 
     const handleSaveCount = (componentId: number) => {
-        if(currentOrder.id && counts[componentId] !== undefined) {
+        if(currentCooling.id && counts[componentId] !== undefined) {
             dispatch(updateComponentCount({
-                orderId: currentOrder.id,
+                coolingId: currentCooling.id,
                 componentId: componentId,
                 count: counts[componentId]
             }))
@@ -158,14 +158,14 @@ export const OrderPage = () => {
     };
 
     const handleApprove = () => {
-        if (currentOrder.id && window.confirm("Подтвердить заявку и завершить расчет?")) {
-            dispatch(resolveOrder({ id: currentOrder.id, action: 'complete' }));
+        if (currentCooling.id && window.confirm("Подтвердить заявку и завершить расчет?")) {
+            dispatch(resolveCooling({ id: currentCooling.id, action: 'complete' }));
         }
     };
 
     const handleReject = () => {
-        if (currentOrder.id && window.confirm("Отклонить заявку?")) {
-            dispatch(resolveOrder({ id: currentOrder.id, action: 'reject' }));
+        if (currentCooling.id && window.confirm("Отклонить заявку?")) {
+            dispatch(resolveCooling({ id: currentCooling.id, action: 'reject' }));
         }
     };
 
@@ -230,14 +230,14 @@ export const OrderPage = () => {
                                 <h5 className="fw-bold mb-3 text-center text-light">Результат расчета</h5>
                                 
                                 {/* 1. ПОКАЗ РЕЗУЛЬТАТА (Уже есть цифры) */}
-                                {(isCompleted || (isFormed && isModerator)) && (currentOrder.cooling_power || 0) > 0 ? (
+                                {(isCompleted || (isFormed && isModerator)) && (currentCooling.cooling_power || 0) > 0 ? (
                                     <div className="text-center">
                                         <div className="p-3 rounded-3 border border-success w-100 mb-3" style={{ backgroundColor: '#19875422' }}>
                                             <div className="text-light opacity-75 small text-uppercase fw-bold mb-1">
                                                 Требуемая мощность
                                             </div>
                                             <div className="display-6 fw-bold text-white">
-                                                {currentOrder.cooling_power} КВт
+                                                {currentCooling.cooling_power} КВт
                                             </div>
                                         </div>
                                         
@@ -282,7 +282,7 @@ export const OrderPage = () => {
                                 )}
 
                                 {/* 4. В ОБРАБОТКЕ (Модератор, заявка ждет решения) */}
-                                {isFormed && isModerator && (!currentOrder.cooling_power) && (
+                                {isFormed && isModerator && (!currentCooling.cooling_power) && (
                                     <div className="text-center py-4">
                                         <ExclamationCircle size={40} className="text-warning mb-3" />
                                         <h5 className="text-warning fw-bold">Требует проверки</h5>
@@ -310,22 +310,22 @@ export const OrderPage = () => {
                             variant="outline-danger" 
                             size="sm"
                             onClick={() => {
-                                if(window.confirm('Удалить эту заявку?')) dispatch(deleteOrder(currentOrder.id!));
+                                if(window.confirm('Удалить эту заявку?')) dispatch(deleteCooling(currentCooling.id!));
                             }}
                         >
                             <Trash size={14} className="me-1"/> Удалить
                         </Button>
 
                         <div className="text-white small opacity-50">
-                            ID: {currentOrder.id}
+                            ID: {currentCooling.id}
                         </div>
 
                         <Button 
                             variant="light" 
                             size="sm" 
                             className="fw-bold px-3"
-                            onClick={() => dispatch(submitOrder(currentOrder.id!))}
-                            disabled={!currentOrder.components?.length}
+                            onClick={() => dispatch(submitCooling(currentCooling.id!))}
+                            disabled={!currentCooling.components?.length}
                         >
                             Сформировать <CheckCircleFill className="ms-1" size={14}/>
                         </Button>
@@ -348,9 +348,9 @@ export const OrderPage = () => {
                     </div>
                 )}
 
-                <h6 className="text-white mb-2 ps-1 small">Компоненты ({currentOrder.components?.length || 0})</h6>
+                <h6 className="text-white mb-2 ps-1 small">Компоненты ({currentCooling.components?.length || 0})</h6>
                 <div className="d-flex flex-column gap-2 mb-4">
-                    {currentOrder.components?.map((c) => (
+                    {currentCooling.components?.map((c) => (
                         <Card key={c.component_id} className="border-0 shadow text-white" style={{ backgroundColor: '#343a40' }}>
                             <Card.Body className="p-2">
                                 <div className="d-flex align-items-center">
@@ -410,7 +410,7 @@ export const OrderPage = () => {
                                                     variant="outline-danger" 
                                                     className="p-1 d-flex align-items-center justify-content-center"
                                                     style={{ width: '30px', height: '30px' }}
-                                                    onClick={() => dispatch(removeComponentFromOrder({ orderId: currentOrder.id!, componentId: c.component_id! }))}
+                                                    onClick={() => dispatch(removeComponentFromCooling({ coolingId: currentCooling.id!, componentId: c.component_id! }))}
                                                     title="Удалить"
                                                 >
                                                     <Trash size={14} />
@@ -423,7 +423,7 @@ export const OrderPage = () => {
                         </Card>
                     ))}
                     
-                    {(!currentOrder.components || currentOrder.components.length === 0) && (
+                    {(!currentCooling.components || currentCooling.components.length === 0) && (
                         <div className="text-center text-secondary small py-3 border border-secondary rounded border-dashed">
                             Список пуст
                         </div>

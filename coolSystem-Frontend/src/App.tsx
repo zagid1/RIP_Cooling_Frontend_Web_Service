@@ -30,8 +30,8 @@ function App() {
                     <Route path="/components" element={<ComponentsListPage />} />
                     <Route path="/components/:id" element={<ComponentDetailPage />} />
                     <Route path="/profile" element={<ProfilePage />} /> 
-                    <Route path="/orders" element={<OrdersListPage />} />
-                    <Route path="/orders/:id" element={<OrderPage />} />
+                    <Route path="/cooling" element={<OrdersListPage />} />
+                    <Route path="/cooling/:id" element={<OrderPage />} />
                 </Route>
             </Routes>
         </BrowserRouter>
