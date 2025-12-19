@@ -50,15 +50,15 @@ export const getComponentById = async (id: string): Promise<IComponent | null> =
 export const getCartBadge = async (): Promise<ICartBadge> => {
     try {
         const token = localStorage.getItem('authToken'); 
-        if (!token) {
-            throw new Error('No auth token found');
-        }
+        // if (!token) {
+        //     throw new Error('No auth token found');
+        // }
 
         const response = await fetch(`${API_BASE}/cooling/coolcart`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
-        });
+        })
 
         if (!response.ok) {
             throw new Error('Failed to fetch cart data');
