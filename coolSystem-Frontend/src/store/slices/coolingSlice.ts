@@ -173,12 +173,12 @@ const coolingSlice = createSlice({
     extraReducers: (builder) => {
         builder
             // Список
-            .addCase(fetchCoolingsList.pending, (state) => { 
+            .addCase(fetchCoolingList.pending, (state) => { 
                 if (state.list.length === 0) {
                     state.loading = true; 
                 } 
             })
-            .addCase(fetchCoolingsList.fulfilled, (state, action) => {
+            .addCase(fetchCoolingList.fulfilled, (state, action) => {
                 state.loading = false;
                 state.list = action.payload || []; 
 })

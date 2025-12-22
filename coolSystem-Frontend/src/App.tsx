@@ -7,7 +7,7 @@ import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { OrdersListPage } from './pages/OrdersListPage';
-import { OrderPage } from './pages/OrderPage';
+import { CoolingPage } from './pages/OrderPage';
 
 const MainLayout = () => (
     <>
@@ -31,7 +31,7 @@ function App() {
                     <Route path="/components/:id" element={<ComponentDetailPage />} />
                     <Route path="/profile" element={<ProfilePage />} /> 
                     <Route path="/cooling" element={<OrdersListPage />} />
-                    <Route path="/cooling/:id" element={<OrderPage />} />
+                    <Route path="/cooling/:id" element={<CoolingPage />} />
                 </Route>
             </Routes>
         </BrowserRouter>

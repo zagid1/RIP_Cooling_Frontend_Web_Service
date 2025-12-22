@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { PersonCircle, BoxArrowRight } from 'react-bootstrap-icons';
 import { logoutUser } from '../store/slices/userSlice';
-import { deleteOrder } from '../store/slices/coolingSlice'; 
+import { deleteCooling } from '../store/slices/coolingSlice'; 
 import { fetchCartBadge } from '../store/slices/cartSlice';
 import type { RootState, AppDispatch } from '../store';
 import './styles/Navbar.css'
@@ -18,7 +18,7 @@ export const AppNavbar = () => {
     const handleLogout = async () => {
         if (cooling_id) {
             try {
-                await dispatch(deleteOrder(cooling_id)).unwrap();
+                await dispatch(deleteCooling(cooling_id)).unwrap();
                 console.log(`Черновик ${cooling_id} был автоматически удален при выходе.`);
             } catch (e) {
                 console.error("Не удалось удалить черновик при выходе", e);
