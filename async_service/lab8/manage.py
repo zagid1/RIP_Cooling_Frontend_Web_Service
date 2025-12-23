@@ -3,6 +3,9 @@
 import os
 import sys
 
+# PS C:\RIP_Asinc_Web_Service\async_service> c:\RIP_Asinc_Web_Service\async_service\env\Scripts\Activate.ps1
+# (env) PS C:\RIP_Asinc_Web_Service\async_service> cd lab8
+# (env) PS C:\RIP_Asinc_Web_Service\async_service\lab8> python manage.py runserver 0.0.0.0:8000
 
 def main():
     """Run administrative tasks."""
