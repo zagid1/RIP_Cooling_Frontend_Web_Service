@@ -24,12 +24,18 @@ export const OrdersListPage = () => {
     const navigate = useNavigate();
     const { list, loading } = useSelector((state: RootState) => state.cooling);
     const { user } = useSelector((state: RootState) => state.user);
+    // Функция для получения сегодняшней даты в формате YYYY-MM-DD
+    const getTodayDate = () => {
+        return new Date().toISOString().split('T')[0];
+    };
 
+    // Инициализация состояния с сегодняшней датой в полях from и to
     const [filters, setFilters] = useState({
         status: 'all',
-        from: '',
-        to: ''
+        from: getTodayDate(),
+        to:''
     });
+
 
     const [selectedCreatorId, setSelectedCreatorId] = useState<number | 'all'>('all');
 
@@ -66,14 +72,27 @@ export const OrdersListPage = () => {
         return Array.from(stats.entries()).map(([id, data]) => ({ id, ...data }));
     }, [list]);
 
-    // --- ФИЛЬТРАЦИЯ СПИСКА ---
-    const displayedList = useMemo(() => {
-        if (!list) return [];
-        if (!user?.moderator) return list;
-        
-        if (selectedCreatorId === 'all') return list;
-        return list.filter(order => order.creator_id === selectedCreatorId);
-    }, [list, user?.moderator, selectedCreatorId]);
+   // --- ФИЛЬТРАЦИЯ И СОРТИРОВКА СПИСКА ---
+const displayedList = useMemo(() => {
+    if (!list) return [];
+    let filteredList = [...list]; // Создаём копию для безопасной сортировки
+
+    // Фильтрация по creator_id (только для модератора)
+    if (user?.moderator) {
+        if (selectedCreatorId !== 'all') {
+            filteredList = filteredList.filter(order => order.creator_id === selectedCreatorId);
+        }
+    }
+
+    // Сортировка: сначала новые заявки (по forming_date), сегодняшние будут сверху
+    filteredList.sort((a, b) => {
+        const dateA = a.forming_date ? new Date(a.forming_date) : new Date(0);
+        const dateB = b.forming_date ? new Date(b.forming_date) : new Date(0);
+        return dateB.getTime() - dateA.getTime(); // Обратный порядок (новые вверху)
+    });
+
+    return filteredList;
+}, [list, user?.moderator, selectedCreatorId]);
 
     const handleRowClick = (id: number | undefined) => {
         if (id) navigate(`/cooling/${id}`);
