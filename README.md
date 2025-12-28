@@ -7,6 +7,7 @@
 Актуальная ветка - Full-interface
 
 Навигация по проекту:
-* Фронтенд - https://github.com/zagid1/RIP_Frontend_Cooling_Service.git
-* Основной веб-сервис - https://github.com/zagid1/RIP-Backend.git
+
+* Фронтенд - https://github.com/zagid1/RIP_Cooling_Frontend_Web_Service.git
+* Основной веб-сервис - https://github.com/zagid1/RIP_Cooling_Backend_Web_Service.git
 * Асинхронный веб-сервис - https://github.com/zagid1/RIP_Cooling_Asinc_Web_Service.git
