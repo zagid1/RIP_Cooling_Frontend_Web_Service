@@ -77,6 +77,14 @@ export interface DsLoginResponse {
   user?: DsUserDTO;
 }
 
+export interface DsPaginatedCoolingResponse {
+  items?: DsCoolingDTO[];
+  /** Время выполнения в мс */
+  query_duration_ms?: number;
+  total?: number;
+  user_stats?: DsUserStatDTO[];
+}
+
 export interface DsPaginatedResponse {
   items?: any;
   total?: number;
@@ -98,6 +106,12 @@ export interface DsUserRegisterRequest {
   full_name: string;
   password: string;
   username: string;
+}
+
+export interface DsUserStatDTO {
+  count?: number;
+  /** Исправил int на uint, так как ID обычно uint */
+  user_id?: number;
 }
 
 export interface DsUserUpdateRequest {
@@ -494,21 +508,27 @@ export class Api<
      * @summary Получить список заявок (авторизованный пользователь)
      * @request GET:/cooling
      * @secure
-     * @response `200` `(DsCoolingDTO)[]` OK
+     * @response `200` `DsPaginatedCoolingResponse` OK
      * @response `401` `Record<string,string>` Необходима авторизация
      */
     coolingList: (
       query?: {
-        /** Фильтр по статусу заявки */
-        status?: number;
-        /** Фильтр по дате 'от' (формат YYYY-MM-DD) */
+        /** Статус */
+        status?: string;
+        /** Дата от */
         from?: string;
-        /** Фильтр по дате 'до' (формат YYYY-MM-DD) */
+        /** Дата до */
         to?: string;
+        /** Страница */
+        page?: number;
+        /** Размер */
+        page_size?: number;
+        /** Индекс БД */
+        use_index?: boolean;
       },
       params: RequestParams = {},
     ) =>
-      this.request<DsCoolingDTO[], Record<string, string>>({
+      this.request<DsPaginatedCoolingResponse, Record<string, string>>({
         path: `/cooling`,
         method: "GET",
         query: query,

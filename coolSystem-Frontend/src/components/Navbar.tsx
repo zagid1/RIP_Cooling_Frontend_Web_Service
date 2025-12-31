@@ -1,8 +1,8 @@
-// Navbar.tsx
 import { Navbar, Container, Nav, Button } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { PersonCircle, BoxArrowRight } from 'react-bootstrap-icons';
+// Добавили иконку Tools
+import { PersonCircle, BoxArrowRight, Tools } from 'react-bootstrap-icons';
 import { logoutUser } from '../store/slices/userSlice';
 import { deleteCooling } from '../store/slices/coolingSlice'; 
 import { fetchCartBadge } from '../store/slices/cartSlice';
@@ -14,8 +14,8 @@ export const AppNavbar = () => {
     const navigate = useNavigate();
     const { isAuthenticated, user } = useSelector((state: RootState) => state.user);
     const { cooling_id } = useSelector((state: RootState) => state.cart);
-
-    const handleLogout = async () => {
+ 
+    const handleLogout = async () => { 
         if (cooling_id) {
             try {
                 await dispatch(deleteCooling(cooling_id)).unwrap();
@@ -32,7 +32,6 @@ export const AppNavbar = () => {
     };
 
     return (
-        // collapseOnSelect - заставляет меню закрываться при выборе пункта
         <Navbar className="custom-navbar" sticky="top" expand="lg" variant="dark" collapseOnSelect>
             <Container fluid className='px-4'>
                 <Navbar.Brand className='nav-brand d-flex align-items-center' as={Link} to="/">
@@ -43,7 +42,6 @@ export const AppNavbar = () => {
 
                 <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav className="ms-auto align-items-lg-center align-items-start">
-                        {/* eventKey нужен для корректной работы collapseOnSelect, если as={Link} */}
                         <Nav.Link eventKey="components" className='nav-link d-flex align-items-center' as={Link} to="/components">
                             Компоненты сервера
                         </Nav.Link>
@@ -54,7 +52,22 @@ export const AppNavbar = () => {
                                     Заявки
                                 </Nav.Link>
 
-                                {/* d-none d-lg-flex: Скрыто на мобильных, Flex на больших экранах */}
+                                {/* --- КНОПКА МОДЕРАТОРА --- */}
+                                {user?.moderator && (
+                                    <Nav.Link 
+                                        eventKey="admin-components" 
+                                        as={Link} 
+                                        // Укажите здесь путь к вашей ComponentsAdminPage
+                                        to="/moderator/components" 
+                                        className="nav-link text-warning d-flex align-items-center gap-1"
+                                        title="Редактирование компонентов"
+                                    >
+                                        <Tools size={16} />
+                                        <span>Панель редактирования</span>
+                                    </Nav.Link>
+                                )}
+                                {/* ------------------------- */}
+
                                 <div className="nav-del d-none d-lg-flex align-items-center px-2">|</div>
 
                                 <Nav.Link eventKey="profile" as={Link} to="/profile" className="nav-link text-white d-flex align-items-center gap-2">
@@ -64,7 +77,6 @@ export const AppNavbar = () => {
                                     </span>
                                 </Nav.Link>
 
-                                {/* Оборачиваем кнопку в Nav.Link или div, чтобы стили работали корректно в потоке */}
                                 <div className="nav-item mt-2 mt-lg-0">
                                     <Button 
                                         variant="outline-light" 
@@ -78,7 +90,6 @@ export const AppNavbar = () => {
                             </>
                         ) : (
                             <>
-                                {/* d-none d-lg-flex: Скрыто на мобильных */}
                                 <div className="nav-del d-none d-lg-flex align-items-center px-2">|</div>
                                 
                                 <Nav.Link eventKey="login" as={Link} to="/login" className="nav-link text-white">

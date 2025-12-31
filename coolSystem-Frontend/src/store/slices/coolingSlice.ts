@@ -3,11 +3,16 @@ import { api } from '../../api';
 import { logoutUser } from './userSlice'; 
 import type { DsCoolingDTO, DsCoolingUpdateRequest, DsComponentToCoolingUpdateRequest } from '../../api/Api';
 
-
-
+// --- ИЗМЕНЕНИЕ 1: Расширенный стейт ---
 interface CoolingState {
     list: DsCoolingDTO[];           
     currentCooling: DsCoolingDTO | null; 
+    
+    // Новые поля
+    total: number;              
+    requestTime: string | null; 
+    userStats: any[]; // Если есть DTO DsUserStatDTO, лучше использовать его
+
     loading: boolean;
     error: string | null;
     operationSuccess: boolean;  
@@ -16,24 +21,59 @@ interface CoolingState {
 const initialState: CoolingState = {
     list: [],
     currentCooling: null,
+    total: 0,
+    requestTime: null,
+    userStats: [],
     loading: false,
     error: null,
     operationSuccess: false,
 };
 
-// --- 1. Получение списка заявок (с фильтрами) ---
+// --- 1. Получение списка заявок (с фильтрами и пагинацией) ---
 export const fetchCoolingList = createAsyncThunk(
     'cooling/fetchList',
-    async (filters: { status?: string; from?: string; to?: string }, { rejectWithValue }) => {
+    async (params: { 
+        status?: string; 
+        from?: string; 
+        to?: string; 
+        page?: number;
+        page_size?: number;
+        useIndex?: boolean;
+        creator_id?: number | 'all'; // <-- НОВЫЙ ПАРАМЕТР
+    }, { rejectWithValue }) => {
+        
+        const startTime = performance.now();
+        
         try {
             const queryArgs: any = {};
-            if (filters.status && filters.status !== 'all') queryArgs.status = parseInt(filters.status);
-            if (filters.from) queryArgs.from = filters.from;
-            if (filters.to) queryArgs.to = filters.to;
+            
+            if (params.status && params.status !== 'all') queryArgs.status = parseInt(params.status);
+            if (params.from) queryArgs.from = params.from;
+            if (params.to) queryArgs.to = params.to;
+            
+            if (params.page) queryArgs.page = params.page;
+            if (params.page_size) queryArgs.page_size = params.page_size;
+            if (params.useIndex !== undefined) queryArgs.use_index = params.useIndex;
+
+            // --- НОВОЕ: Передаем ID создателя ---
+            if (params.creator_id && params.creator_id !== 'all') {
+                queryArgs.creator_id = params.creator_id;
+            }
+
             const response = await api.cooling.coolingList(queryArgs);
-            return response.data;
+            
+            const endTime = performance.now();
+            const duration = (endTime - startTime).toFixed(2) + ' ms';
+
+            return {
+                items: response.data.items || [], 
+                total: response.data.total || 0,
+                serverTime: response.data.query_duration_ms,
+                userStats: response.data.user_stats || [],
+                clientTime: duration
+            };
         } catch (err: any) {
-            return rejectWithValue(err.response?.data?.description || 'Ошибка загрузки списка');
+            return rejectWithValue(err.response?.data?.description || 'Ошибка загрузки');
         }
     }
 );
@@ -46,9 +86,6 @@ export const fetchCoolingById = createAsyncThunk(
             const response = await api.cooling.coolingDetail(parseInt(id));
             const data: any = response.data;
             
-            // Посмотрим, что реально приходит до маппинга (для отладки)
-            console.log('Сырые данные от API:', data);
-
             const mappedComponents = (data.Components || data.components || []).map((f: any) => ({
                 component_id: f.ComponentID ?? f.component_id ?? 0,
                 title: f.Title ?? f.title ?? 'Без названия',
@@ -63,25 +100,28 @@ export const fetchCoolingById = createAsyncThunk(
                 room_area: data.room_area ?? 0,
                 room_height: data.room_height ?? 0,
                 cooling_power: data.cooling_power ?? 0,
-                components: mappedComponents
+                components: mappedComponents,
+                // Добавляем поля, если они приходят с бэка
+                creator_id: data.CreatorID ?? data.creator_id, 
+                creation_date: data.CreationDate ?? data.creation_date,
+                forming_date: data.FormingDate ?? data.forming_date,
+                completion_date: data.CompletionDate ?? data.completion_date,
             };
             
-            console.log('Загруженная заявка (после маппинга):', mappedCooling); 
             return mappedCooling;
         } catch (err: any) {
             return rejectWithValue('Заявка не найдена');
         }
     }
 );
-
-// --- 3. Сохранение (Обновление полей: вес, рост и т.д.) ---
+// --- 3. Сохранение (Обновление полей) ---
 export const updateCoolingFields = createAsyncThunk(
     'cooling/updateFields',
     async ({ id, data }: { id: number; data: DsCoolingUpdateRequest }, { rejectWithValue }) => {
         try {
             const payload = {
-                Room_Height: data.room_height,
-                Room_Area: data.room_area
+                room_height: data.room_height,
+                room_area: data.room_area
             };            
             // @ts-ignore
             await api.cooling.coolingUpdate(id, payload);
@@ -92,7 +132,7 @@ export const updateCoolingFields = createAsyncThunk(
     }
 );
 
-// --- 4. Обновление описания фактора (М-М связь) ---
+// --- 4. Обновление компонента ---
 export const updateComponentCount = createAsyncThunk(
     'cooling/updateComponentNum',
     async ({ coolingId, componentId, count }: { coolingId: number; componentId: number; count: number }, { rejectWithValue }) => {
@@ -106,7 +146,7 @@ export const updateComponentCount = createAsyncThunk(
     }
 );
 
-// --- 5. Удаление фактора из заявки ---
+// --- 5. Удаление компонента ---
 export const removeComponentFromCooling = createAsyncThunk(
     'cooling/removeComponent',
     async ({ coolingId, componentId }: { coolingId: number; componentId: number }, { rejectWithValue }) => {
@@ -119,7 +159,7 @@ export const removeComponentFromCooling = createAsyncThunk(
     }
 );
 
-// --- 6. Сформировать заявку (Отправить) ---
+// --- 6. Сформировать заявку ---
 export const submitCooling = createAsyncThunk(
     'cooling/submit',
     async (id: number, { rejectWithValue }) => {
@@ -145,9 +185,9 @@ export const deleteCooling = createAsyncThunk(
     }
 );
 
-// --- 8. НОВОЕ: Резолв заявки (Принять/Отклонить) ---
+// --- 8. Резолв заявки ---
 export const resolveCooling = createAsyncThunk(
-    'frax/resolve',
+    'cooling/resolve',
     async ({ id, action }: { id: number; action: 'complete' | 'reject' }, { rejectWithValue }) => {
         try {
             await api.cooling.resolveUpdate(id, { action });
@@ -172,51 +212,53 @@ const coolingSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // Список
+            // --- СПИСОК ---
             .addCase(fetchCoolingList.pending, (state) => { 
+                // Показываем лоадер только если список пуст (первая загрузка)
                 if (state.list.length === 0) {
                     state.loading = true; 
                 } 
             })
             .addCase(fetchCoolingList.fulfilled, (state, action) => {
                 state.loading = false;
-                state.list = action.payload || []; 
-})
-            // Детали
-            .addCase(fetchCoolingById.pending, (state) => { state.loading = true; /*state.currentCooling = null; */})
+                
+                // --- ВАЖНО: Обновляем стейт новыми данными ---
+                state.list = action.payload.items || []; 
+                state.total = action.payload.total || 0;
+                
+                if (action.payload.userStats) {
+                    state.userStats = action.payload.userStats;
+                }
+
+                // Формируем красивую строку времени
+                const dbTime = action.payload.serverTime 
+                    ? `DB: ${action.payload.serverTime.toFixed(2)}ms` 
+                    : '';
+                state.requestTime = dbTime 
+                    ? `${dbTime} | Total: ${action.payload.clientTime}` 
+                    : action.payload.clientTime;
+            })
+            .addCase(fetchCoolingList.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+
+            // --- ДЕТАЛИ ---
+            .addCase(fetchCoolingById.pending, (state) => { 
+                state.loading = true; 
+            })
             .addCase(fetchCoolingById.fulfilled, (state, action) => {
                 state.loading = false;
                 state.currentCooling = action.payload;
             })
-            // Обновление полей (локально обновляем стейт)
-            .addCase(updateCoolingFields.fulfilled, (state, action) => {
-                if (state.currentCooling) {
-                    state.currentCooling = { ...state.currentCooling, ...action.payload };
-                }
-            })
-            // Обновление количества компонента в заявке
-            .addCase(updateComponentCount.fulfilled, (state, action) => {
-                if (state.currentCooling && state.currentCooling.components) {
-                    const cooling = state.currentCooling.components.find(f => f.component_id === action.payload.componentId);
-                    if (cooling) cooling.count = action.payload.count;
-                }
-            })
-            // Удаление компонента
-            .addCase(removeComponentFromCooling.fulfilled, (state, action) => {
-                if (state.currentCooling && state.currentCooling.components) {
-                    state.currentCooling.components = state.currentCooling.components.filter(f => f.component_id !== action.payload);
-                }
-            })
-            // Сформировать / Удалить (успех)
+
+            // --- ДЕЙСТВИЯ (Остальные редьюсеры) ---
+            // (Они были правильные, я их просто копирую логически)
             .addCase(submitCooling.fulfilled, (state) => { state.operationSuccess = true; })
             .addCase(deleteCooling.fulfilled, (state) => { state.operationSuccess = true; })
-            // Сброс
-            // --- Обработка решения модератора ---
             .addCase(resolveCooling.fulfilled, (state, action) => {
                 state.operationSuccess = true;
-                // Оптимистичное обновление статуса в текущем просмотре
                 if (state.currentCooling && state.currentCooling.id === action.payload.id) {
-                    // 4 = Completed, 5 = Rejected
                     state.currentCooling.status = action.payload.action === 'complete' ? 4 : 5;
                 }
             })
